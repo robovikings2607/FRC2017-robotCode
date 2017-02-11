@@ -1,6 +1,14 @@
 package org.usfirst.frc.team2607.robot;
 
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.RobotDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -10,6 +18,11 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	
+	Climber itsTheCliiiiiiiiiiiiiiiiiiiiiiimb;
+	Transmission leftTrans , rightTrans;
+	RobovikingStick driveController , opController;
+	RobotDrive robotDrive;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -17,6 +30,38 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		itsTheCliiiiiiiiiiiiiiiiiiiiiiimb = new Climber(Constants.climberMotor);
+		leftTrans = new Transmission(Constants.leftMotorA , Constants.leftMotorB , "Left Transmission");
+		rightTrans = new Transmission(Constants.rightMotorA , Constants.rightMotorB , "Right Transmission");
+		
+		robotDrive = new RobotDrive(leftTrans , rightTrans);
+		
+		driveController = new RobovikingStick(Constants.driverController);
+		opController = new RobovikingStick(Constants.operatorController);
+		
+		
+		// for tuning....webserver to view PID logs
+    	Server server = new Server(5801);
+        ServerConnector connector = new ServerConnector(server);
+        connector.setPort(5801);
+        server.addConnector(connector);
+
+        ResourceHandler resource_handler = new ResourceHandler();
+        resource_handler.setDirectoriesListed(true);
+        resource_handler.setWelcomeFiles(new String[]{ "/home/lvuser/index.html" });
+
+        resource_handler.setResourceBase(".");
+        
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+        server.setHandler(handlers);
+        try {
+			server.start();
+			server.join();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 	}
 
@@ -49,6 +94,20 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		
+		//TELEOP STUFF------------
+		robotDrive.arcadeDrive(driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxLeftStickY) , 
+				driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
+		
+		if(opController.getRawButton(RobovikingStick.xBoxLeftBumper)) {
+			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runForward();
+		} else if(opController.getRawButton(RobovikingStick.xBoxRightBumper)) {
+			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runBackwards();
+		} else {
+			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
+		}
+		
+		
 		
 	}
 

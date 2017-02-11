@@ -13,17 +13,18 @@ public class Climber {
 	//TODO make a method that spins the motor in reverse when called
 
 	Talon talonMotor;
-public Climber(int pwmChannel) {
- talonMotor = new Talon(pwmChannel);}
- 
-public void runForward(){
- talonMotor.set (0.5);
- }
-
-public void runBackwards(){
-	talonMotor.set(-0.5);
-}
-public void off(){
-	talonMotor.setDisabled();
-}
+	public Climber(int pwmChannel) {
+	 talonMotor = new Talon(pwmChannel);}
+	 
+	public void runForward(){
+	 talonMotor.set (0.5);
+	 }
+	
+	public void runBackwards(){
+		talonMotor.set(-0.5);
+	}
+	
+	public void stop(){
+		talonMotor.set(0.0);
+	}
 }
