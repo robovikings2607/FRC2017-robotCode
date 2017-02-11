@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 public class Transmission implements SpeedController{
 	
 	CANTalon motor1 , motor2;
+	PIDLogger logger;
 	private String name;
  
 	public Transmission(int channelA , int channelB , String name){
@@ -29,16 +30,18 @@ public class Transmission implements SpeedController{
 		motor1.setP(0);		// start with 10% of error (native units)
 		motor1.setI(0);
 		motor1.setD(0);
+		
+		logger = new PIDLogger(motor1, name);
+		logger.start();
 	}
 	
 	@Override
 	public void pidWrite(double output) {
-		// TODO Auto-generated method stub
+		
 	}
 	
 	@Override
 	public double get() {
-		// TODO Auto-generated method stub
 		return motor1.get();
 	}
 	

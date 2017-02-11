@@ -6,9 +6,12 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.usfirst.frc.team2607.robot.auto.AutonomousEngine;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,9 +23,14 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class Robot extends IterativeRobot {
 	
 	Climber itsTheCliiiiiiiiiiiiiiiiiiiiiiimb;
+	GearHandler gearHandler;
 	Transmission leftTrans , rightTrans;
 	RobovikingStick driveController , opController;
 	RobotDrive robotDrive;
+	AutonomousEngine autoEngine;
+	Solenoid shifter;
+	Talon pickup;
+	Thread Autothread = null;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -31,14 +39,17 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		itsTheCliiiiiiiiiiiiiiiiiiiiiiimb = new Climber(Constants.climberMotor);
+		gearHandler = new GearHandler(Constants.gearSolenoid);
 		leftTrans = new Transmission(Constants.leftMotorA , Constants.leftMotorB , "Left Transmission");
 		rightTrans = new Transmission(Constants.rightMotorA , Constants.rightMotorB , "Right Transmission");
-		
+		shifter = new Solenoid(Constants.pcmDeviceID , Constants.shifterSolenoid);
+		pickup = new Talon(Constants.pickupMotor);
 		robotDrive = new RobotDrive(leftTrans , rightTrans);
 		
 		driveController = new RobovikingStick(Constants.driverController);
 		opController = new RobovikingStick(Constants.operatorController);
-		
+		autoEngine=new AutonomousEngine(this);
+		autoEngine.loadSavedMode();
 		
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
@@ -78,15 +89,28 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		
+	Autothread=new Thread(autoEngine);	
+	Autothread.start();
+	autonModeRan=true;
 	}
-
+	boolean autonModeRan=false;
 	/**
 	 * This function is called periodically during autonomous
 	 */
 	@Override
-	public void autonomousPeriodic() {
-		
+	public void disabledPeriodic() {
+		if (autonModeRan) {
+			autonModeRan=false;
+					if (Autothread.isAlive()) {
+						System.out.println("autoThread alive, interrupting");
+						Autothread.interrupt();
+					}else{
+						System.out.println("autoThread not alive");
+					}
+		}
+		if (driveController.getButtonPressedOneShot(RobovikingStick.xBoxButtonStart)) {
+			autoEngine.selectMode();
+		}
 	}
 
 	/**
@@ -106,6 +130,17 @@ public class Robot extends IterativeRobot {
 		} else {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
 		}
+		
+		if(opController.getRawButton(RobovikingStick.xBoxButtonB)) {
+			pickup.set(0.5);
+		} else if(opController.getRawButton(RobovikingStick.xBoxLeftStickY)) {
+			pickup.set(-0.5);
+		} else {
+			pickup.set(0.0);
+		}
+		
+		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
+		gearHandler.set(opController.getToggleButton(RobovikingStick.xBoxButtonA));
 		
 		
 		

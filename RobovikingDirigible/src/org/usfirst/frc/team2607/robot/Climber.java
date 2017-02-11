@@ -14,7 +14,8 @@ public class Climber {
 
 	Talon talonMotor;
 	public Climber(int pwmChannel) {
-	 talonMotor = new Talon(pwmChannel);}
+		talonMotor = new Talon(pwmChannel);
+	 }
 	 
 	public void runForward(){
 	 talonMotor.set (0.5);
