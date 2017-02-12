@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 
 import org.usfirst.frc.team2607.robot.Robot;
+import org.usfirst.frc.team2607.robot.RobovikingDriveTrainProfileDriver;
+
+import com.team254.lib.trajectory.Path;
 
 /**
  * @author Cerora
@@ -19,6 +22,7 @@ public class AutonomousManager {
 		
 		modes.add(new DoNothingFailsafe());
 		modes.add(new DoNothing());
+		modes.add(new CenterPeg(robot));
 	}
 	
 	public AutonomousMode getModeByName (String name){
@@ -54,7 +58,27 @@ public class AutonomousManager {
 	 * You must add the mode to the array once you define its class
 	 */
 	
-	
+	public class CenterPeg extends AutonomousMode {
+		
+		CenterPeg(Robot r) {
+			super(r);
+		}
+
+		@Override
+		public void run() {
+			Path p = this.getPathFromFile("/home/lvuser/centerPeg.txt");
+			
+			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , p);
+			driver.followPath();
+		}
+
+		@Override
+		public String getName() {
+			
+			return "CenterPeg";
+		}
+		
+	}
 	
 	public class DoNothing extends AutonomousMode {
 		

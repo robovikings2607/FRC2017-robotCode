@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,13 +25,15 @@ public class Robot extends IterativeRobot {
 	
 	Climber itsTheCliiiiiiiiiiiiiiiiiiiiiiimb;
 	GearHandler gearHandler;
-	Transmission leftTrans , rightTrans;
+	public Transmission leftTrans , rightTrans;
 	RobovikingStick driveController , opController;
 	RobotDrive robotDrive;
 	AutonomousEngine autoEngine;
 	Solenoid shifter;
 	Talon pickup;
 	Thread Autothread = null;
+	
+	double targetSpeed = 0.0;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -50,6 +53,8 @@ public class Robot extends IterativeRobot {
 		opController = new RobovikingStick(Constants.operatorController);
 		autoEngine=new AutonomousEngine(this);
 		autoEngine.loadSavedMode();
+		
+		SmartDashboard.putNumber("targetSpeed", targetSpeed);
 		
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
@@ -92,6 +97,13 @@ public class Robot extends IterativeRobot {
 	Autothread=new Thread(autoEngine);	
 	Autothread.start();
 	autonModeRan=true;
+	
+	leftTrans.enablePID();
+	rightTrans.enablePID();
+	double speed = SmartDashboard.getNumber("targetSpeed", 0.0);
+	leftTrans.set(-speed);
+	rightTrans.set(speed);
+	
 	}
 	boolean autonModeRan=false;
 	/**
@@ -99,6 +111,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledPeriodic() {
+		leftTrans.disablePID();
+		rightTrans.disablePID();
 		if (autonModeRan) {
 			autonModeRan=false;
 					if (Autothread.isAlive()) {
@@ -133,16 +147,14 @@ public class Robot extends IterativeRobot {
 		
 		if(opController.getRawButton(RobovikingStick.xBoxButtonB)) {
 			pickup.set(0.5);
-		} else if(opController.getRawButton(RobovikingStick.xBoxLeftStickY)) {
+		} else if(opController.getRawButton(RobovikingStick.xBoxButtonY)) {
 			pickup.set(-0.5);
 		} else {
 			pickup.set(0.0);
 		}
 		
 		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
-		gearHandler.set(opController.getToggleButton(RobovikingStick.xBoxButtonA));
-		
-		
+		gearHandler.set(opController.getRawButton(RobovikingStick.xBoxButtonA));
 		
 	}
 
@@ -150,8 +162,8 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during test mode
 	 */
 	@Override
-	public void testPeriodic() {
-		
+	public void autonomousPeriodic() {
+			
 	}
 }
 
