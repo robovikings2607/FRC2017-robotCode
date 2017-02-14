@@ -1,11 +1,12 @@
 package org.usfirst.frc.team2607.robot;
-
+/*
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+*/
 import org.usfirst.frc.team2607.robot.auto.AutonomousEngine;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -55,7 +56,7 @@ public class Robot extends IterativeRobot {
 		autoEngine.loadSavedMode();
 		
 		SmartDashboard.putNumber("targetSpeed", targetSpeed);
-		
+		/*
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
         ServerConnector connector = new ServerConnector(server);
@@ -78,7 +79,7 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+		*/
 	}
 
 	/**
@@ -137,17 +138,19 @@ public class Robot extends IterativeRobot {
 		robotDrive.arcadeDrive(driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxLeftStickY) , 
 				driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
 		
-		if(opController.getRawButton(RobovikingStick.xBoxLeftBumper)) {
+		if(opController.getPOV(0) == 0 )   {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runForward();
-		} else if(opController.getRawButton(RobovikingStick.xBoxRightBumper)) {
+		} else if(opController.getPOV(0) == 180) {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runBackwards();
 		} else {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
 		}
 		
-		if(opController.getRawButton(RobovikingStick.xBoxButtonB)) {
+		itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.lockInPlace(opController.getToggleButton(RobovikingStick.xBoxButtonY));
+		
+		if(opController.getRawButton(RobovikingStick.xBoxRightBumper)) {
 			pickup.set(0.5);
-		} else if(opController.getRawButton(RobovikingStick.xBoxButtonY)) {
+		} else if(opController.getRawButton(RobovikingStick.xBoxLeftBumper)) {
 			pickup.set(-0.5);
 		} else {
 			pickup.set(0.0);

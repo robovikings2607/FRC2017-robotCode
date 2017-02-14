@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2607.robot;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 
 public class Climber {
@@ -13,19 +14,25 @@ public class Climber {
 	//TODO make a method that spins the motor in reverse when called
 
 	Talon talonMotor;
+	Solenoid climberBrake;
 	public Climber(int pwmChannel) {
 		talonMotor = new Talon(pwmChannel);
+		climberBrake = new Solenoid(Constants.pcmDeviceID, Constants.brakeSolenoid);
 	 }
 	 
 	public void runForward(){
-	 talonMotor.set (0.5);
+	 talonMotor.set(1.0);
 	 }
 	
 	public void runBackwards(){
-		talonMotor.set(-0.5);
+		talonMotor.set(-1.0);
 	}
 	
 	public void stop(){
 		talonMotor.set(0.0);
+	}
+	
+	public void lockInPlace(boolean on){
+		climberBrake.set(on);
 	}
 }

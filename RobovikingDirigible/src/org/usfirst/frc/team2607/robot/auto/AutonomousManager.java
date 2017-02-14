@@ -13,7 +13,7 @@ import com.team254.lib.trajectory.Path;
  *
  */
 public class AutonomousManager {
-	
+	  
 	Robot robot;
 	public ArrayList<AutonomousMode> modes = new ArrayList<AutonomousMode>();
 

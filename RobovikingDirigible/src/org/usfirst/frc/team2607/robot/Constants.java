@@ -8,7 +8,8 @@ public class Constants {
 	public static final int rightMotorB = 3;
 	
 	public static final int pickupMotor = 0;
-	public static final int climberMotor = 5;
+	public static final int climberMotor = 1;
+	public static final int brakeSolenoid = 2;
 	public static final int gearSolenoid = 1;
 	public static final int shifterSolenoid = 0;
 	public static final int pcmDeviceID = 1;
