@@ -10,12 +10,14 @@ public class PIDLogger extends Thread {
 	private boolean loggingEnabled = false;
 	String deviceName;
 	private double SP;
+	private long curTime, startTime;
 	
 	CANTalon srx;
 	
 	@Override
 	public void run(){
 		while (true){
+			startTime = System.currentTimeMillis();
 			logEntry();
 			try {Thread.sleep(10); } catch (Exception e) {}
 		}
@@ -41,7 +43,7 @@ public class PIDLogger extends Thread {
 	    		try {
 	    			String s = "/home/lvuser/" + deviceName + "." + System.currentTimeMillis() + ".csv";
 	    			logFile = new PrintWriter(new File(s));
-	    			logFile.println("Time,SP,RPM,Native,Err,VIn,VOut,AmpOut,P,I,D,F");
+	    			logFile.println("Time,TotalTime,SP,RPM,NativeVel,Err,NativePos,VIn,VOut,AmpOut,P,I,D,F");
 	    		} catch (Exception e) {
 	    			okToEnable = false;
 	    		}
@@ -59,11 +61,14 @@ public class PIDLogger extends Thread {
 	 
 	 public void logEntry() {
 	        if (loggingEnabled) {
+	        	curTime = System.currentTimeMillis() - startTime;
 	        	logFile.println(System.currentTimeMillis() + "," +
+	        					curTime + "," +
 	        					SP + "," +
 	        					srx.getSpeed() + "," + 
 	        					srx.getEncVelocity() + "," +
 	        				    srx.getClosedLoopError() + "," + 
+	        					srx.getEncPosition() + "," +
 	        					srx.getBusVoltage()+ "," + 
 	        				    srx.getOutputVoltage() + "," +
 	        				    srx.getOutputCurrent() + "," +
