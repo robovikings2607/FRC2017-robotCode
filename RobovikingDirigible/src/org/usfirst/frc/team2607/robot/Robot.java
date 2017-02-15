@@ -146,7 +146,7 @@ public class Robot extends IterativeRobot {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
 		}
 		
-		itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.lockInPlace(opController.getToggleButton(RobovikingStick.xBoxButtonY));
+		//itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.lockInPlace(opController.getToggleButton(RobovikingStick.xBoxButtonY));
 		
 		if(opController.getRawButton(RobovikingStick.xBoxRightBumper)) {
 			pickup.set(0.5);

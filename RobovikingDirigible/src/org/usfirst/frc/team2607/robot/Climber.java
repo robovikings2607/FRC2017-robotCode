@@ -15,24 +15,40 @@ public class Climber {
 
 	Talon talonMotor;
 	Solenoid climberBrake;
+	int counter;
 	public Climber(int pwmChannel) {
 		talonMotor = new Talon(pwmChannel);
 		climberBrake = new Solenoid(Constants.pcmDeviceID, Constants.brakeSolenoid);
+		counter = 0;
 	 }
 	 
 	public void runForward(){
+	 climberBrake.set(false);
+	 counter ++;
+	 if(counter >= 20){
 	 talonMotor.set(1.0);
+	 	}
 	 }
 	
 	public void runBackwards(){
+		climberBrake.set(false);
+		counter++;
+		if(counter >= 20){
 		talonMotor.set(-1.0);
+		}
 	}
 	
 	public void stop(){
 		talonMotor.set(0.0);
+		counter = 0;
+		climberBrake.set(true);
 	}
 	
-	public void lockInPlace(boolean on){
-		climberBrake.set(on);
+	public void lockInPlace(){
+		climberBrake.set(false);
+	}
+	
+	public void unlockFromPlace(){
+		climberBrake.set(true);
 	}
 }
