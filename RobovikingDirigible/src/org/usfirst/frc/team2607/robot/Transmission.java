@@ -20,6 +20,7 @@ public class Transmission implements SpeedController{
 		
 		motor2.changeControlMode(CANTalon.TalonControlMode.Follower);
 		motor2.set(motor1.getDeviceID());
+		motor2.enableBrakeMode(true);
 		
 		motor1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		motor1.configEncoderCodesPerRev(1024);
@@ -27,6 +28,7 @@ public class Transmission implements SpeedController{
 		motor1.configNominalOutputVoltage(0.0, 0.0);
 		motor1.configPeakOutputVoltage(12.0, -12.0);
 		motor1.setProfile(0);
+		motor1.enableBrakeMode(true);
 		
 		/*
 		 * 1024 nativeClicks / 1 encoderRotations
@@ -38,7 +40,7 @@ public class Transmission implements SpeedController{
 		 */
 		if(name.equalsIgnoreCase("Right Transmission")) {
 			motor1.setF(1023.00 / 2874.00); // set to (1023 / nativeVelocity)
-			motor1.setP(102.3 / 480.0);					// start with 10% of error (native units)
+			motor1.setP(102.3 / 480.0);
 			motor1.setI(0);
 			motor1.setD(0);
 		} else {	
@@ -66,6 +68,11 @@ public class Transmission implements SpeedController{
 	
 	public void enablePID() {
 		motor1.changeControlMode(TalonControlMode.Speed);
+		logger.enableLogging(true);
+	}
+	
+	public void enableVoltage() {
+		motor1.changeControlMode(TalonControlMode.Voltage);
 		logger.enableLogging(true);
 	}
 	

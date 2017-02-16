@@ -34,7 +34,7 @@ public class Robot extends IterativeRobot {
 	Talon pickup;
 	Thread Autothread = null;
 	
-	double targetSpeed = 0.0;
+	double targetSpeed = 0.0, rightVoltage = 0.0, leftVoltage = 0.0;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -56,6 +56,9 @@ public class Robot extends IterativeRobot {
 		autoEngine.loadSavedMode();
 		
 		SmartDashboard.putNumber("targetSpeed", targetSpeed);
+		SmartDashboard.putNumber("rightVoltage", rightVoltage);
+		SmartDashboard.putNumber("leftVoltage", leftVoltage);
+
 		/*
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
@@ -96,17 +99,32 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 	Autothread=new Thread(autoEngine);	
-	Autothread.start();
-	autonModeRan=true;
-	
+//	Autothread.start();
+//	autonModeRan=true;
+/*	
 	leftTrans.enablePID();
 	rightTrans.enablePID();
 	double speed = SmartDashboard.getNumber("targetSpeed", 0.0);
 	leftTrans.set(-speed);
 	rightTrans.set(speed);
-	
+*/	
+	leftTrans.enableVoltage();
+	rightTrans.enableVoltage();
 	}
+	
 	boolean autonModeRan=false;
+
+	@Override
+	public void autonomousPeriodic() {
+		shifter.set(true);
+		rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
+		leftVoltage = SmartDashboard.getNumber("leftVoltage",0.0);
+		leftTrans.set(leftVoltage);
+		rightTrans.set(rightVoltage);
+		SmartDashboard.putNumber("leftSpeed", leftTrans.getRate());
+		SmartDashboard.putNumber("rightSpeed", rightTrans.getRate());
+	}
+	
 	/**
 	 * This function is called periodically during autonomous
 	 */
@@ -164,9 +182,5 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during test mode
 	 */
-	@Override
-	public void autonomousPeriodic() {
-			
-	}
 }
 
