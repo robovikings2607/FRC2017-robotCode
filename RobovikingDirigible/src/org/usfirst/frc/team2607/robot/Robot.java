@@ -1,4 +1,10 @@
 package org.usfirst.frc.team2607.robot;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 /*
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -59,7 +65,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("rightVoltage", rightVoltage);
 		SmartDashboard.putNumber("leftVoltage", leftVoltage);
 
-		/*
+		
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
         ServerConnector connector = new ServerConnector(server);
@@ -82,7 +88,7 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
+		
 	}
 
 	/**
@@ -108,8 +114,8 @@ public class Robot extends IterativeRobot {
 	leftTrans.set(-speed);
 	rightTrans.set(speed);
 */	
-	leftTrans.enableVoltage();
-	rightTrans.enableVoltage();
+	leftTrans.enablePID();
+	rightTrans.enablePID();
 	}
 	
 	boolean autonModeRan=false;
@@ -117,10 +123,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		shifter.set(true);
-		rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
-		leftVoltage = SmartDashboard.getNumber("leftVoltage",0.0);
-		leftTrans.set(leftVoltage);
-		rightTrans.set(rightVoltage);
+//		rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
+		double speed = SmartDashboard.getNumber("targetSpeed",0.0);
+		leftTrans.set(-speed);
+		rightTrans.set(speed);
 		SmartDashboard.putNumber("leftSpeed", leftTrans.getRate());
 		SmartDashboard.putNumber("rightSpeed", rightTrans.getRate());
 	}

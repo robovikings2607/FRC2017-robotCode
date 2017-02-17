@@ -39,13 +39,13 @@ public class Transmission implements SpeedController{
 		 * 2173 nativeClicks / 1 foot
 		 */
 		if(name.equalsIgnoreCase("Right Transmission")) {
-			motor1.setF(1023.00 / 2874.00); // set to (1023 / nativeVelocity)
-			motor1.setP(102.3 / 480.0);
+			motor1.setF(1023.00 / 2900.00); // set to (1023 / nativeVelocity)
+			motor1.setP(7.1 / 80.0);
 			motor1.setI(0);
 			motor1.setD(0);
 		} else {	
-			motor1.setF(1023.00 / 2874.00); // set to (1023 / nativeVelocity)
-			motor1.setP(102.3 / 480.0);					// start with 10% of error (native units)
+			motor1.setF(1023.00 / 2863.00); // set to (1023 / nativeVelocity)
+			motor1.setP(40.8 / 140.0);					// start with 10% of error (native units)
 			motor1.setI(0);
 			motor1.setD(0);
 		}
