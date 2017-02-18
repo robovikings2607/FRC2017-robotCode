@@ -102,6 +102,7 @@ public class Robot extends IterativeRobot {
 	 * switch structure below with additional strings. If using the
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
+	int autoCount = 0;
 	@Override
 	public void autonomousInit() {
 	Autothread=new Thread(autoEngine);	
@@ -116,14 +117,17 @@ public class Robot extends IterativeRobot {
 */	
 	leftTrans.enablePID();
 	rightTrans.enablePID();
+	//shifter.set(true);
+	autoCount = 0;
 	}
 	
 	boolean autonModeRan=false;
 
 	@Override
 	public void autonomousPeriodic() {
-		shifter.set(true);
-//		rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
+		if (++autoCount < 10) return;
+		rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
+		leftVoltage = SmartDashboard.getNumber("leftVoltage",0.0);
 		double speed = SmartDashboard.getNumber("targetSpeed",0.0);
 		leftTrans.set(-speed);
 		rightTrans.set(speed);

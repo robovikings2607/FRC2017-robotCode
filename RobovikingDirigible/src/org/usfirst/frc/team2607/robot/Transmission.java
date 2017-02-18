@@ -27,7 +27,7 @@ public class Transmission implements SpeedController{
 		motor1.reverseSensor(false);
 		motor1.configNominalOutputVoltage(0.0, 0.0);
 		motor1.configPeakOutputVoltage(12.0, -12.0);
-		motor1.setProfile(0);
+		
 		motor1.enableBrakeMode(true);
 		
 		/*
@@ -38,17 +38,39 @@ public class Transmission implements SpeedController{
 		 * 2275.556 nativeClicks / 12.566 inches (or 1.047 feet)
 		 * 2173 nativeClicks / 1 foot
 		 */
+		// profile 0 is low gear PID gains
+		motor1.setProfile(0);
 		if(name.equalsIgnoreCase("Right Transmission")) {
-			motor1.setF(1023.00 / 2900.00); // set to (1023 / nativeVelocity)
-			motor1.setP(7.1 / 80.0);
+			double Kp = 13.1 / 80.0; //10.1
+			motor1.setF((1023.00 / 2900.00) * 1.08); // set to (1023 / nativeVelocity)
+			motor1.setP(Kp);
 			motor1.setI(0);
-			motor1.setD(0);
+			motor1.setD(Kp * 5.0);
 		} else {	
-			motor1.setF(1023.00 / 2863.00); // set to (1023 / nativeVelocity)
-			motor1.setP(40.8 / 140.0);					// start with 10% of error (native units)
+			double Kp = 55.8 / 140.0;  //44.8
+			motor1.setF((1023.00 / 2863.00) * 1.16); // set to (1023 / nativeVelocity)
+			motor1.setP(Kp);					// start with 10% of error (native units)
 			motor1.setI(0);
-			motor1.setD(0);
+			motor1.setD(Kp * 8.5);
 		}
+		
+		// profile 1 is high gear PID gains
+		motor1.setProfile(1);
+		if(name.equalsIgnoreCase("Right Transmission")) {
+			double Kp = 15.0 / 200.0; 
+			motor1.setF((1023.0 / 6102.0) * 1.04); // set to (1023 / nativeVelocity) // 6102
+			motor1.setP(Kp);
+			motor1.setI(0);
+			motor1.setD(Kp * 22.0);
+		} else {	
+			double Kp = 15.0 / 100.0;  
+			motor1.setF((1023.0 / 5766.0) * 1.06); // set to (1023 / nativeVelocity) // 5766
+			motor1.setP(Kp);					// start with 10% of error (native units)
+			motor1.setI(0);
+			motor1.setD(Kp * 22.0);
+		}
+		
+		
 		
 		logger = new PIDLogger(motor1, name);
 		logger.start();
@@ -67,6 +89,7 @@ public class Transmission implements SpeedController{
 	}
 	
 	public void enablePID() {
+		motor1.setProfile(1);
 		motor1.changeControlMode(TalonControlMode.Speed);
 		logger.enableLogging(true);
 	}
