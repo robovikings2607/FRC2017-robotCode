@@ -55,6 +55,7 @@ public class Robot extends IterativeRobot {
 		shifter = new Solenoid(Constants.pcmDeviceID , Constants.shifterSolenoid);
 		pickup = new Talon(Constants.pickupMotor);
 		robotDrive = new RobotDrive(leftTrans , rightTrans);
+		robotDrive.setSafetyEnabled(false);
 		
 		driveController = new RobovikingStick(Constants.driverController);
 		opController = new RobovikingStick(Constants.operatorController);
@@ -105,9 +106,13 @@ public class Robot extends IterativeRobot {
 	int autoCount = 0;
 	@Override
 	public void autonomousInit() {
+	shifter.set(true);
+	leftTrans.setHighGear(false);
+	rightTrans.setHighGear(false);
 	Autothread=new Thread(autoEngine);	
-//	Autothread.start();
-//	autonModeRan=true;
+	Autothread.start();
+	autonModeRan=true;
+	
 /*	
 	leftTrans.enablePID();
 	rightTrans.enablePID();
@@ -115,8 +120,8 @@ public class Robot extends IterativeRobot {
 	leftTrans.set(-speed);
 	rightTrans.set(speed);
 */	
-	leftTrans.enablePID();
-	rightTrans.enablePID();
+//	leftTrans.enablePID(true, true);
+//	rightTrans.enablePID(true, true);
 	//shifter.set(true);
 	autoCount = 0;
 	}
@@ -125,14 +130,17 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		if (++autoCount < 10) return;
-		rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
-		leftVoltage = SmartDashboard.getNumber("leftVoltage",0.0);
-		double speed = SmartDashboard.getNumber("targetSpeed",0.0);
-		leftTrans.set(-speed);
-		rightTrans.set(speed);
-		SmartDashboard.putNumber("leftSpeed", leftTrans.getRate());
-		SmartDashboard.putNumber("rightSpeed", rightTrans.getRate());
+/*		if(!Autothread.isAlive()) {
+			if (++autoCount < 10) return;
+			rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
+			leftVoltage = SmartDashboard.getNumber("leftVoltage",0.0);
+			double speed = SmartDashboard.getNumber("targetSpeed",0.0);
+			leftTrans.set(-speed);
+			rightTrans.set(speed);
+			SmartDashboard.putNumber("leftSpeed", leftTrans.getRate());
+			SmartDashboard.putNumber("rightSpeed", rightTrans.getRate());
+		}
+*/
 	}
 	
 	/**
@@ -156,6 +164,13 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
+	
+	@Override
+	public void teleopInit() {
+		leftTrans.enablePID(true, false);
+		rightTrans.enablePID(true, false);
+	}
+	
 	/**
 	 * This function is called periodically during operator control
 	 */
@@ -184,7 +199,10 @@ public class Robot extends IterativeRobot {
 			pickup.set(0.0);
 		}
 		
+
 		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
+		leftTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
+		rightTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
 		gearHandler.set(opController.getRawButton(RobovikingStick.xBoxButtonA));
 		
 	}

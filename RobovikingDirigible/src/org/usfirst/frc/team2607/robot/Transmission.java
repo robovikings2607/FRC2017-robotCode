@@ -11,7 +11,7 @@ public class Transmission implements SpeedController{
 	CANTalon motor1 , motor2;
 	PIDLogger logger;
 	private String name;
-	boolean pidEnabled;
+	boolean highGear = true, speedIsRPM = false, pidEnabled = false; 
  
 	public Transmission(int channelA , int channelB , String name){
 		motor1 = new CANTalon(channelA);
@@ -27,6 +27,7 @@ public class Transmission implements SpeedController{
 		motor1.reverseSensor(false);
 		motor1.configNominalOutputVoltage(0.0, 0.0);
 		motor1.configPeakOutputVoltage(12.0, -12.0);
+		motor1.setVoltageRampRate(0.0);
 		
 		motor1.enableBrakeMode(true);
 		
@@ -38,8 +39,27 @@ public class Transmission implements SpeedController{
 		 * 2275.556 nativeClicks / 12.566 inches (or 1.047 feet)
 		 * 2173 nativeClicks / 1 foot
 		 */
-		// profile 0 is low gear PID gains
+	
 		motor1.setProfile(0);
+		setHighGearGains();
+		
+		// High Gear
+		// up to 250 RPM: 
+		//		right: FF = (1023.0 / 6102.0) * 1.24, Kp =30.0 / 200.0, Kd = Kp * 22.0
+		//		left: FF = (1023.0 / 5766.0) * 1.36, Kp = 15.0 / 100.0, Kd = Kp * 22.0
+		// 250 RPM to 450 RPM....also worked down to 250 RPM:
+		// 		right: (1023.0 / 6102.0) * 1.14,  60.0 / 200.0, Kp * 22.0
+		//      left: (1023.0 / 5766.0) * 1.20, 25.0 / 100.0, Kp * 22.0
+		// 500 RPM, also worked down to 200 RPM
+		//		right: 1023.0 / 6102.0) * 1.14  60.0 / 200.0, Kp * 22.0
+		//		left: 1023.0 / 5766.0) * 1.18  23.0 / 100.0 Kp * 34.0
+		// scratch the above, try what's below
+				
+		logger = new PIDLogger(motor1, name);
+		logger.start();
+	}
+
+	public void setLowGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
 			double Kp = 13.1 / 80.0; //10.1
 			motor1.setF((1023.00 / 2900.00) * 1.08); // set to (1023 / nativeVelocity)
@@ -53,29 +73,34 @@ public class Transmission implements SpeedController{
 			motor1.setI(0);
 			motor1.setD(Kp * 8.5);
 		}
-		
-		// profile 1 is high gear PID gains
-		motor1.setProfile(1);
+	}
+
+	public void setHighGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
-			double Kp = 15.0 / 200.0; 
-			motor1.setF((1023.0 / 6102.0) * 1.04); // set to (1023 / nativeVelocity) // 6102
+			double Kp = 102.3 / 300.0; //60.0 / 200.0; 
+			motor1.setF((1023.0 / 6102.0) * 1.1);
 			motor1.setP(Kp);
 			motor1.setI(0);
-			motor1.setD(Kp * 22.0);
+			motor1.setD(0);
 		} else {	
-			double Kp = 15.0 / 100.0;  
-			motor1.setF((1023.0 / 5766.0) * 1.06); // set to (1023 / nativeVelocity) // 5766
+			double Kp = 102.3 / 300.0; //23.0 / 100.0;  
+			motor1.setF((1023.0 / 5766.0) * 1.1);
 			motor1.setP(Kp);					// start with 10% of error (native units)
 			motor1.setI(0);
-			motor1.setD(Kp * 22.0);
+			motor1.setD(0);
 		}
-		
-		
-		
-		logger = new PIDLogger(motor1, name);
-		logger.start();
-		
-		pidEnabled = false;
+	}
+	
+	public void setHighGear(boolean hg) {
+		if (highGear != hg) {
+			highGear = hg;
+			if (highGear) {
+				setHighGearGains();
+			}
+			else { 
+				setLowGearGains();
+			}
+		}
 	}
 	
 	@Override
@@ -88,25 +113,28 @@ public class Transmission implements SpeedController{
 		return motor1.get();
 	}
 	
-	public void enablePID() {
-		motor1.setProfile(1);
+	public void enablePID(boolean enableLogging, boolean expectRPM) {
 		motor1.changeControlMode(TalonControlMode.Speed);
-		logger.enableLogging(true);
+		speedIsRPM = expectRPM;
+		logger.enableLogging(enableLogging);
+		pidEnabled = true;
 	}
 	
-	public void enableVoltage() {
+	public void enableVoltage(boolean enableLogging) {
 		motor1.changeControlMode(TalonControlMode.Voltage);
-		logger.enableLogging(true);
+		logger.enableLogging(enableLogging);
 	}
 	
 	public void disablePID() {
 		motor1.changeControlMode(TalonControlMode.PercentVbus);
 		logger.enableLogging(false);
+		pidEnabled = false;
 	}
 	
 	public void resetEncoder() {
 		motor1.reset();
 	}
+	
 	public double getDistance() {
 		return motor1.getEncPosition();
 	}
@@ -115,10 +143,16 @@ public class Transmission implements SpeedController{
 		return motor1.getEncVelocity();
 	}
 	
+	double prevAbsSpeed = 0.0;
 	@Override
 	public void set(double speed) {
 		// TODO Auto-generated method stub
-		motor1.set (speed);
+
+		if (!speedIsRPM) { 
+			if (highGear) speed = speed * 820.0;
+			else speed = speed * 410.0;			
+		}
+		motor1.set(speed);
 		logger.updSetpoint(speed);
 	}
 	

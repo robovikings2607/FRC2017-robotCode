@@ -39,20 +39,23 @@ public class RobovikingDriveTrainProfileDriver {
 	    		startTime = System.currentTimeMillis();
 	    		running = true;
 	    		done = false;
-	    		leftMotors.enablePID();
-	    		rightMotors.enablePID();
-	    		leftMotors.resetEncoder();
-	    		rightMotors.resetEncoder();
+	    		leftMotors.enablePID(true,true);
+	    		rightMotors.enablePID(true,true);
 	    	}
 	    	step = (System.currentTimeMillis() - startTime) / (long)(dtSeconds * 1000);
+	    	System.out.print("step: " + step);
 	    	try {
+	    		double toNative = 2173.0;
 	    		if (runBACKWARDS){
-	    			leftMotors.set(-leftVelPts.get((int)step).vel);
-	    			rightMotors.set(-rightVelPts.get((int)step).vel);
+	    			leftMotors.set((-leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0);
+	    			rightMotors.set((-rightVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0);
 		    		//rightMotors.setSP(invertSegment(rightVelPts.get((int)step)));	
 	    		} else {
-	    			leftMotors.set(leftVelPts.get((int)step).vel);
-	    			rightMotors.set(rightVelPts.get((int)step).vel);
+	    			double leftRPM = -(leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0;
+	    			double rightRPM = (rightVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0; 
+	    			leftMotors.set(leftRPM);
+	    			rightMotors.set(rightRPM);
+	    			System.out.println("leftRPM: " + leftRPM + " rightRPM: " + rightRPM);
 		    		//leftMotors.setSP(leftVelPts.get((int)step));
 		    		//rightMotors.setSP(rightVelPts.get((int)step));	
 	    		}
@@ -101,6 +104,7 @@ public class RobovikingDriveTrainProfileDriver {
 	
 	public void followPath() {
 		runBACKWARDS = false;
+		System.out.println("pointExecutor.startPeriodic(" + dtSeconds / 2.0);
 		pointExecutor.startPeriodic(dtSeconds / 2.0);
 	}
 	

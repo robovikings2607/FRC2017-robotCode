@@ -7,6 +7,9 @@ import org.usfirst.frc.team2607.robot.Robot;
 import org.usfirst.frc.team2607.robot.RobovikingDriveTrainProfileDriver;
 
 import com.team254.lib.trajectory.Path;
+import com.team254.lib.trajectory.PathGenerator;
+import com.team254.lib.trajectory.TrajectoryGenerator;
+import com.team254.lib.trajectory.WaypointSequence;
 
 /**
  * @author Cerora
@@ -66,9 +69,26 @@ public class AutonomousManager {
 
 		@Override
 		public void run() {
-			Path p = this.getPathFromFile("/home/lvuser/centerPeg.txt");
 			
-			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , p);
+	    	TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
+	        config.dt = .05;
+	        config.max_acc = 5.0;
+	        config.max_jerk = 30.0;
+	        config.max_vel = 7.0;
+	        final double kWheelbaseWidth = 29.872 / 12.0;
+	        
+	        WaypointSequence p = new WaypointSequence(10);
+	        p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
+
+	        p.addWaypoint(new WaypointSequence.Waypoint(20.0 , 0.0 , 0.0));
+
+	        Path path = PathGenerator.makePath(p, config,
+	            kWheelbaseWidth, "Corn Dogs");
+	        
+			
+//			Path p = this.getPathFromFile("/home/lvuser/centerPeg.txt");
+			
+			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
 			driver.followPath();
 		}
 
