@@ -47,11 +47,11 @@ public class RobovikingDriveTrainProfileDriver {
 	    	try {
 	    		double toNative = 2173.0;
 	    		if (runBACKWARDS){
-	    			leftMotors.set((-leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0);
+	    			leftMotors.set(((leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0) * 1.0);
 	    			rightMotors.set((-rightVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0);
 		    		//rightMotors.setSP(invertSegment(rightVelPts.get((int)step)));	
 	    		} else {
-	    			double leftRPM = -(leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0;
+	    			double leftRPM = -((leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0) * 1.0;
 	    			double rightRPM = (rightVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0; 
 	    			leftMotors.set(leftRPM);
 	    			rightMotors.set(rightRPM);

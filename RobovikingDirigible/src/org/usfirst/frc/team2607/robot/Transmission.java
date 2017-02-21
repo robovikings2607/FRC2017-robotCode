@@ -20,7 +20,7 @@ public class Transmission implements SpeedController{
 		
 		motor2.changeControlMode(CANTalon.TalonControlMode.Follower);
 		motor2.set(motor1.getDeviceID());
-		motor2.enableBrakeMode(true);
+		motor2.enableBrakeMode(false);
 		
 		motor1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		motor1.configEncoderCodesPerRev(1024);
@@ -29,7 +29,7 @@ public class Transmission implements SpeedController{
 		motor1.configPeakOutputVoltage(12.0, -12.0);
 		motor1.setVoltageRampRate(0.0);
 		
-		motor1.enableBrakeMode(true);
+		motor1.enableBrakeMode(false);
 		
 		/*
 		 * 1024 nativeClicks / 1 encoderRotations
@@ -61,17 +61,17 @@ public class Transmission implements SpeedController{
 
 	public void setLowGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
-			double Kp = 13.1 / 80.0; //10.1
+			double Kp = 50.0 / 80.0; //13.1 / 80.0; //10.1
 			motor1.setF((1023.00 / 2900.00) * 1.08); // set to (1023 / nativeVelocity)
 			motor1.setP(Kp);
 			motor1.setI(0);
-			motor1.setD(Kp * 5.0);
+			motor1.setD(0.0 * 5.0);
 		} else {	
-			double Kp = 55.8 / 140.0;  //44.8
-			motor1.setF((1023.00 / 2863.00) * 1.16); // set to (1023 / nativeVelocity)
+			double Kp = 100.0 / 140.0; //55.8 / 140.0;  //44.8
+			motor1.setF((1023.00 / 2863.00) * 1.08); // set to (1023 / nativeVelocity)
 			motor1.setP(Kp);					// start with 10% of error (native units)
 			motor1.setI(0);
-			motor1.setD(Kp * 8.5);
+			motor1.setD(0.0 * 8.5);
 		}
 	}
 

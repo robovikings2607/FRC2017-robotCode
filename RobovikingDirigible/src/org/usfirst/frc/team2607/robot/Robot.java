@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 	
 	Climber itsTheCliiiiiiiiiiiiiiiiiiiiiiimb;
-	GearHandler gearHandler;
+	public GearHandler gearHandler;
 	public Transmission leftTrans , rightTrans;
 	RobovikingStick driveController , opController;
 	RobotDrive robotDrive;
@@ -130,7 +130,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-/*		if(!Autothread.isAlive()) {
+/*
 			if (++autoCount < 10) return;
 			rightVoltage = SmartDashboard.getNumber("rightVoltage",0.0);
 			leftVoltage = SmartDashboard.getNumber("leftVoltage",0.0);
@@ -139,9 +139,10 @@ public class Robot extends IterativeRobot {
 			rightTrans.set(speed);
 			SmartDashboard.putNumber("leftSpeed", leftTrans.getRate());
 			SmartDashboard.putNumber("rightSpeed", rightTrans.getRate());
-		}
-*/
+*/	
 	}
+
+
 	
 	/**
 	 * This function is called periodically during autonomous
@@ -181,13 +182,19 @@ public class Robot extends IterativeRobot {
 		robotDrive.arcadeDrive(driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxLeftStickY) , 
 				driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
 		
-		if(opController.getPOV(0) == 0 )   {
+		if(Math.abs(opController.getRawAxis(RobovikingStick.xBoxLeftStickY)) > 0.1 ) {
+			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.run(opController.getRawAxis(RobovikingStick.xBoxLeftStickY));
+		} else{
+			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
+		}
+			
+		/*if(opController.getPOV(0) == 0 )   {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runForward();
 		} else if(opController.getPOV(0) == 180) {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runBackwards();
 		} else {
 			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
-		}
+		}*/
 		
 		//itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.lockInPlace(opController.getToggleButton(RobovikingStick.xBoxButtonY));
 		
