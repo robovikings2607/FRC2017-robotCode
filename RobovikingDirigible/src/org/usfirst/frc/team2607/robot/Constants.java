@@ -17,5 +17,14 @@ public class Constants {
 	public static final int driverController = 0;
 	public static final int operatorController = 1;
 	
+	public static final double nativePerFoot = 2172.99549;
+	
+	public static double feetToRotations(double feet) {
+		return (feet * nativePerFoot) / 4096.0;
+	}
+	
+	public static double feetPerSecondToRPM(double ftPerSec) {
+		return ((ftPerSec * nativePerFoot * 60.0) / 4096.0);
+	}
 	
 }

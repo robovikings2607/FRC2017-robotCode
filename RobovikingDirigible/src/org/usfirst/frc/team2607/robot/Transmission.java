@@ -4,6 +4,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SpeedController;
 
 public class Transmission implements SpeedController{
@@ -12,7 +13,7 @@ public class Transmission implements SpeedController{
 	PIDLogger logger;
 	private String name;
 	boolean highGear = true, speedIsRPM = false, pidEnabled = false; 
- 
+
 	public Transmission(int channelA , int channelB , String name){
 		motor1 = new CANTalon(channelA);
 		motor2 = new CANTalon(channelB);
@@ -183,5 +184,9 @@ public class Transmission implements SpeedController{
 	public String getName() {
 		// TODO Auto-generated method stub
 		return name;
+	}
+
+	public CANTalon getMasterSRX() {
+		return motor1;
 	}
 }
