@@ -127,15 +127,16 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 				}
 				state.compareAndSet(2, 3);
 				break;
-			case 4:						// MP is running, when we get to end set talon to hold last point
+			case 3:						// MP is running, when we get to end set talon to hold last point
 				if (leftMPStatus.outputEnable == CANTalon.SetValueMotionProfile.Disable && 
 					rightMPStatus.outputEnable == CANTalon.SetValueMotionProfile.Disable) {
-					state.compareAndSet(4, 0);
+					state.compareAndSet(3, 0);
 				}
 				
 				if (leftMPStatus.activePointValid && leftMPStatus.activePoint.isLastPoint) {
 					leftSRX.set(CANTalon.SetValueMotionProfile.Disable.value);		
 				}
+				
 				if (rightMPStatus.activePointValid && rightMPStatus.activePoint.isLastPoint) {
 					rightSRX.set(CANTalon.SetValueMotionProfile.Disable.value);
 				}
@@ -164,6 +165,11 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 			process();
 			try { Thread.sleep(20);} catch (Exception e) {}
 		}
+	}
+	
+	public void runMP() {
+		System.out.println("Starting SRX MP");
+		state.compareAndSet(0, 1);
 	}
 	
 	public void interruptMP() {
