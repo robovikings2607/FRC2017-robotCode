@@ -26,6 +26,7 @@ public class AutonomousManager {
 		modes.add(new DoNothingFailsafe());
 		modes.add(new DoNothing());
 		modes.add(new CenterPeg(robot));
+		modes.add(new LeftPeg(robot));
 	}
 	
 	public AutonomousMode getModeByName (String name){

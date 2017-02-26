@@ -12,7 +12,7 @@ public class Transmission implements SpeedController{
 	CANTalon motor1 , motor2;
 	PIDLogger logger;
 	private String name;
-	boolean highGear = true, speedIsRPM = false, pidEnabled = false; 
+	boolean highGear = true, speedIsRPM = false; 
 
 	public Transmission(int channelA , int channelB , String name){
 		motor1 = new CANTalon(channelA);
@@ -60,6 +60,38 @@ public class Transmission implements SpeedController{
 		logger.start();
 	}
 
+	public void setMotionProfileLowGearGains() {
+		if (name.equalsIgnoreCase("Right Transmission")) {
+			double Kp = 0.0;
+			motor1.setF((1023.00 / 2900.00) * 1.08);
+			motor1.setP(Kp);
+			motor1.setI(0);
+			motor1.setD(0.0);
+		} else {
+			double Kp = 0.0;
+			motor1.setF((1023.00 / 2863.00) * 1.08);
+			motor1.setP(0.0);
+			motor1.setI(0);
+			motor1.setD(0.0);
+		}
+	}
+	
+	public void setMotionProfileHighGearGains() {
+		if(name.equalsIgnoreCase("Right Transmission")) {
+			double Kp = 0.0; 
+			motor1.setF((1023.0 / 6102.0) * 1.1);
+			motor1.setP(Kp);
+			motor1.setI(0);
+			motor1.setD(0);
+		} else {	
+			double Kp = 0.0;  
+			motor1.setF((1023.0 / 5766.0) * 1.1);
+			motor1.setP(Kp);					
+			motor1.setI(0);
+			motor1.setD(0);
+		}		
+	}
+	
 	public void setLowGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
 			double Kp = 50.0 / 80.0; //13.1 / 80.0; //10.1
@@ -96,10 +128,17 @@ public class Transmission implements SpeedController{
 		if (highGear != hg) {
 			highGear = hg;
 			if (highGear) {
-				setHighGearGains();
-			}
-			else { 
-				setLowGearGains();
+				if (motor1.getControlMode() == TalonControlMode.MotionProfile) {
+					setMotionProfileHighGearGains();
+				} else {
+					setHighGearGains();	
+				}
+			} else { 
+				if (motor1.getControlMode() == TalonControlMode.MotionProfile) {
+					setMotionProfileLowGearGains();
+				} else {
+					setLowGearGains();
+				}
 			}
 		}
 	}
@@ -118,7 +157,6 @@ public class Transmission implements SpeedController{
 		motor1.changeControlMode(TalonControlMode.Speed);
 		speedIsRPM = expectRPM;
 		logger.enableLogging(enableLogging);
-		pidEnabled = true;
 	}
 	
 	public void enableVoltage(boolean enableLogging) {
@@ -129,11 +167,11 @@ public class Transmission implements SpeedController{
 	public void disablePID() {
 		motor1.changeControlMode(TalonControlMode.PercentVbus);
 		logger.enableLogging(false);
-		pidEnabled = false;
 	}
 	
-	public void resetEncoder() {
-		motor1.reset();
+	public void enableMotionProfileMode(boolean enableLogging) {
+		motor1.changeControlMode(TalonControlMode.MotionProfile);
+		logger.enableLogging(enableLogging);
 	}
 	
 	public double getDistance() {

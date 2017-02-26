@@ -17,22 +17,21 @@ import edu.wpi.first.wpilibj.Notifier;
 
 public class RobovikingSRXDriveTrainFollower extends Thread {
 
-	private CANTalon leftSide, rightSide;				// the SRX's we're driving
-	//private int state;						
+	private CANTalon leftSRX, rightSRX;				// the SRX's we're driving			
 	private AtomicInteger state;			// the state machine control variable
 	private TrajectoryPoint[] leftPoints, rightPoints;
 	Notifier notifier = new Notifier(new PeriodicRunnable());
 
 	class PeriodicRunnable implements java.lang.Runnable {
-	    public void run() {  leftSide.processMotionProfileBuffer(); rightSide.processMotionProfileBuffer(); }
+	    public void run() {  leftSRX.processMotionProfileBuffer(); rightSRX.processMotionProfileBuffer(); }
 	}
 	
 	private CANTalon.MotionProfileStatus leftMPStatus = new CANTalon.MotionProfileStatus(),
 										 rightMPStatus = new CANTalon.MotionProfileStatus();
 
 	public RobovikingSRXDriveTrainFollower(Transmission leftTrans, Transmission rightTrans, Path p, boolean followBackwards) {
-		leftSide = leftTrans.getMasterSRX();
-		rightSide = rightTrans.getMasterSRX();
+		leftSRX = leftTrans.getMasterSRX();
+		rightSRX = rightTrans.getMasterSRX();
 		state = new AtomicInteger(0);
 		
 		Trajectory lt = p.getLeftWheelTrajectory(), rt = p.getRightWheelTrajectory();
@@ -71,11 +70,11 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 			
 			s = rt.getSegment(i);
 			if (followBackwards) {
-				pos = s.pos;
-				vel = s.vel;
-			} else {
 				pos = -s.pos;
 				vel = -s.vel;
+			} else {
+				pos = s.pos;
+				vel = s.vel;
 			}
 			
 			rightPoints[i+1].position = Constants.feetToRotations(pos);
@@ -96,11 +95,11 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 		
 		int curPoint = 0; 
 		
-		if (leftSide.getControlMode() != TalonControlMode.MotionProfile || 
-			rightSide.getControlMode() != TalonControlMode.MotionProfile) return;
+		if (leftSRX.getControlMode() != TalonControlMode.MotionProfile || 
+			rightSRX.getControlMode() != TalonControlMode.MotionProfile) return;
 		
-		leftSide.getMotionProfileStatus(leftMPStatus);
-		rightSide.getMotionProfileStatus(rightMPStatus);
+		leftSRX.getMotionProfileStatus(leftMPStatus);
+		rightSRX.getMotionProfileStatus(rightMPStatus);
 		
 		switch (state.get()) {
 			default:					// the default state is just waiting for command to push MP, 
@@ -109,21 +108,21 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 			case 1:						// triggered start
 				if (leftMPStatus.outputEnable == CANTalon.SetValueMotionProfile.Disable && 
 				    rightMPStatus.outputEnable == CANTalon.SetValueMotionProfile.Disable) { 
-					leftSide.clearMotionProfileTrajectories();
-					rightSide.clearMotionProfileTrajectories();
+					leftSRX.clearMotionProfileTrajectories();
+					rightSRX.clearMotionProfileTrajectories();
 					state.compareAndSet(1,2);		//state += 1;
 				}
-				leftSide.set(CANTalon.SetValueMotionProfile.Disable.value);
-				rightSide.set(CANTalon.SetValueMotionProfile.Disable.value);
+				leftSRX.set(CANTalon.SetValueMotionProfile.Disable.value);
+				rightSRX.set(CANTalon.SetValueMotionProfile.Disable.value);
 				curPoint = 0;
 				break;
 			case 2:						// push and start profile
 				while (curPoint < leftPoints.length) {
-					leftSide.pushMotionProfileTrajectory(leftPoints[curPoint]);
-					rightSide.pushMotionProfileTrajectory(rightPoints[curPoint]);
+					leftSRX.pushMotionProfileTrajectory(leftPoints[curPoint]);
+					rightSRX.pushMotionProfileTrajectory(rightPoints[curPoint]);
 					if (++curPoint == 6) {
-						leftSide.set(CANTalon.SetValueMotionProfile.Enable.value);
-						rightSide.set(CANTalon.SetValueMotionProfile.Enable.value);
+						leftSRX.set(CANTalon.SetValueMotionProfile.Enable.value);
+						rightSRX.set(CANTalon.SetValueMotionProfile.Enable.value);
 					}
 				}
 				state.compareAndSet(2, 3);
@@ -135,21 +134,21 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 				}
 				
 				if (leftMPStatus.activePointValid && leftMPStatus.activePoint.isLastPoint) {
-					leftSide.set(CANTalon.SetValueMotionProfile.Disable.value);		
+					leftSRX.set(CANTalon.SetValueMotionProfile.Disable.value);		
 				}
 				if (rightMPStatus.activePointValid && rightMPStatus.activePoint.isLastPoint) {
-					rightSide.set(CANTalon.SetValueMotionProfile.Disable.value);
+					rightSRX.set(CANTalon.SetValueMotionProfile.Disable.value);
 				}
 				
 			case 10:					// reset state to interrupt and clear the running MP, and go back to wait	
 				if (leftMPStatus.outputEnable == CANTalon.SetValueMotionProfile.Disable && 
 					rightMPStatus.outputEnable == CANTalon.SetValueMotionProfile.Disable) {
-					leftSide.clearMotionProfileTrajectories();
-					rightSide.clearMotionProfileTrajectories();
+					leftSRX.clearMotionProfileTrajectories();
+					rightSRX.clearMotionProfileTrajectories();
 					state.set(0);
 				} else {
-					leftSide.set(CANTalon.SetValueMotionProfile.Disable.value);
-					rightSide.set(CANTalon.SetValueMotionProfile.Disable.value);
+					leftSRX.set(CANTalon.SetValueMotionProfile.Disable.value);
+					rightSRX.set(CANTalon.SetValueMotionProfile.Disable.value);
 				}
 				break;
 		}
@@ -158,8 +157,8 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 	@Override
 	public void run() {
 		System.out.println("Starting RobovikingSRXProfileDriver thread....");
-		leftSide.changeMotionControlFramePeriod(5);
-		rightSide.changeMotionControlFramePeriod(5);
+		leftSRX.changeMotionControlFramePeriod(5);
+		rightSRX.changeMotionControlFramePeriod(5);
 		notifier.startPeriodic(.005);
 		while (true) {
 			process();
