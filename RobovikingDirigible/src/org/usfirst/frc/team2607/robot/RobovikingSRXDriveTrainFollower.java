@@ -166,6 +166,11 @@ public class RobovikingSRXDriveTrainFollower extends Thread {
 		}
 	}
 	
+	public void runMP() {
+		System.out.println("Starting SRX MP");
+		state.compareAndSet(0, 1);
+	}
+	
 	public void interruptMP() {
 		// if we're running a profile (enabled), interrupt (disable and clear) and go to wait state
 		if (state.get() != 0) state.set(10);
