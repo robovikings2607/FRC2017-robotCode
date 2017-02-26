@@ -49,7 +49,7 @@ public class PIDLogger extends Thread {
 	    		try {
 	    			logFile = new PrintWriter(new File("/home/lvuser/" + deviceName + System.currentTimeMillis() + ".csv"));
 	    			logFile2 = new PrintWriter(new File("/home/lvuser/" + deviceName + ".csv"));
-	    			String header = "Time,TotalTime,SP,RPM,NativeVel,Err,NativePos,VIn,VOut,AmpOut,P,I,D,F";
+	    			String header = "Time,TotalTime,SP,RPM,NativeVel,Err,Rot,NativePos,VIn,VOut,AmpOut,P,I,D,F";
 	    			logFile.println(header);
 	    			logFile2.println(header);
 	    		} catch (Exception e) {
@@ -78,6 +78,7 @@ public class PIDLogger extends Thread {
 	        					srx.getSpeed() + "," + 
 	        					srx.getEncVelocity() + "," +
 	        				    srx.getClosedLoopError() + "," + 
+	        					srx.getPosition() + "," +
 	        					srx.getEncPosition() + "," +
 	        					srx.getBusVoltage()+ "," + 
 	        				    srx.getOutputVoltage() + "," +
