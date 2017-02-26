@@ -26,7 +26,6 @@ public class AutonomousManager {
 		modes.add(new DoNothingFailsafe());
 		modes.add(new DoNothing());
 		modes.add(new CenterPeg(robot));
-		modes.add(new CenterPegExp(robot));
 	}
 	
 	public AutonomousMode getModeByName (String name){
@@ -71,6 +70,7 @@ public class AutonomousManager {
 		@Override
 		public void run() {
 			
+			/*
 	    	TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
 	        config.dt = .05;
 	        config.max_acc = 14.0;
@@ -86,50 +86,9 @@ public class AutonomousManager {
 
 	        Path path = PathGenerator.makePath(p, config,
 	            kWheelbaseWidth, "Corn Dogs");
-	        
+	        */
 			
-//			Path p = this.getPathFromFile("/home/lvuser/centerPeg.txt");
-			
-			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
-			driver.followPath();
-			
-		}
-
-		@Override
-		public String getName() {
-			
-			return "CenterPeg";
-		}
-		
-	}
-	
-public class CenterPegExp extends AutonomousMode {
-		
-		CenterPegExp(Robot r) {
-			super(r);
-		}
-
-		@Override
-		public void run() {
-			
-	    	TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
-	        config.dt = .05;
-	        config.max_acc = 14.0;
-	        config.max_jerk = 30.0;
-	        config.max_vel = 8.0;
-	        final double kWheelbaseWidth = 29.872 / 12.0;
-	        final double fudgex = 1.0;
-	        
-	        WaypointSequence p = new WaypointSequence(10);
-	        p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
-
-	        p.addWaypoint(new WaypointSequence.Waypoint(12.0 * fudgex , 0.0 , 0.0));
-
-	        Path path = PathGenerator.makePath(p, config,
-	            kWheelbaseWidth, "Corn Dogs");
-	        
-			
-//			Path p = this.getPathFromFile("/home/lvuser/centerPeg.txt");
+			Path path = this.getPathFromFile("/home/lvuser/centerPeg.txt");
 			
 			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
 			driver.followPathBACKWARDS();
@@ -146,16 +105,79 @@ public class CenterPegExp extends AutonomousMode {
 				robot.rightTrans.set(0);
 				robot.gearHandler.set(false);
 			} catch (Exception e) {}
+		}
+
+		@Override
+		public String getName() {
+			return "CenterPeg";
+		}
+		
+	}
+	
+	public class LeftPeg extends AutonomousMode {
+		
+		LeftPeg(Robot r) {
+			super(r);
+		}
+
+		@Override
+		public void run() {
+			TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
+	        config.dt = .05;
+	        config.max_acc = 10.0;
+	        config.max_jerk = 30.0;
+	        config.max_vel = 12.0;
+	        final double kWheelbaseWidth = 29.872 / 12.0;
+	        
+	        WaypointSequence p = new WaypointSequence(10);
+	        p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
+
+	        p.addWaypoint(new WaypointSequence.Waypoint(7.5 , -1.75 , 5.6));
+
+	        Path path = PathGenerator.makePath(p, config,
+	            kWheelbaseWidth, "Cotton Candy");
+	        
+	        //Path path = this.getPathFromFile("/home/lvuser/rightPeg.txt");
 			
+			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
+			driver.followPathBACKWARDS();
+			
+			try {
+				while (!driver.isDone()) { 
+					Thread.sleep(20); 
+				}
+				robot.gearHandler.set(true);
+				Thread.sleep(10);
+				robot.leftTrans.set(-100);
+				robot.rightTrans.set(100);
+				Thread.sleep(500);
+				robot.leftTrans.set(0);
+				robot.rightTrans.set(0);
+				robot.gearHandler.set(false);
+			} catch (Exception e) {}
+		}
+
+		@Override
+		public String getName() {
+			return "LeftPeg";
+		}
+	}
+	
+	public class RightPeg extends AutonomousMode {
+		
+		RightPeg(Robot r) {
+			super(r);
+		}
+
+		@Override
+		public void run() {
 			
 		}
 
 		@Override
 		public String getName() {
-			
-			return "CenterPegExperimental";
+			return "RightPeg";
 		}
-		
 	}
 	
 	public class DoNothing extends AutonomousMode {
