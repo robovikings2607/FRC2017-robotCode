@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot {
 	RobovikingStick driveController , opController;
 	RobotDrive robotDrive;
 	AutonomousEngine autoEngine;
-	Solenoid shifter;
+	public Solenoid shifter;
 	Talon pickup;
 	Thread Autothread = null;
 	
@@ -106,9 +106,6 @@ public class Robot extends IterativeRobot {
 	int autoCount = 0;
 	@Override
 	public void autonomousInit() {
-	shifter.set(true);
-	leftTrans.setHighGear(false);
-	rightTrans.setHighGear(false);
 	Autothread=new Thread(autoEngine);	
 	Autothread.start();
 	autonModeRan=true;
@@ -208,8 +205,8 @@ public class Robot extends IterativeRobot {
 		
 
 		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
-		leftTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
-		rightTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
+		leftTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
+		rightTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
 		gearHandler.set(opController.getRawButton(RobovikingStick.xBoxButtonA));
 		
 	}

@@ -45,19 +45,13 @@ public class RobovikingDriveTrainProfileDriver {
 	    	step = (System.currentTimeMillis() - startTime) / (long)(dtSeconds * 1000);
 	    	System.out.print("step: " + step);
 	    	try {
-	    		double toNative = 2173.0;
 	    		if (runBACKWARDS){
-	    			leftMotors.set(((leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0) * 1.0);
-	    			rightMotors.set((-rightVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0);
-		    		//rightMotors.setSP(invertSegment(rightVelPts.get((int)step)));	
+	    			leftMotors.set(Constants.feetPerSecondToRPM(rightVelPts.get((int)step).vel)); 
+	    			rightMotors.set(Constants.feetPerSecondToRPM(-leftVelPts.get((int)step).vel));
+	
 	    		} else {
-	    			double leftRPM = -((leftVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0) * 1.0;
-	    			double rightRPM = (rightVelPts.get((int)step).vel * toNative) * 60.0 / 1024.0 / 4.0; 
-	    			leftMotors.set(leftRPM);
-	    			rightMotors.set(rightRPM);
-	    			System.out.println("leftRPM: " + leftRPM + " rightRPM: " + rightRPM);
-		    		//leftMotors.setSP(leftVelPts.get((int)step));
-		    		//rightMotors.setSP(rightVelPts.get((int)step));	
+	    			leftMotors.set(-Constants.feetPerSecondToRPM(leftVelPts.get((int)step).vel));
+	    			rightMotors.set(Constants.feetPerSecondToRPM(rightVelPts.get((int)step).vel));
 	    		}
 	    	} catch (Exception e) {
 	    		pointExecutor.stop();

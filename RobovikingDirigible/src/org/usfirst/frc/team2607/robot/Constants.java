@@ -17,7 +17,7 @@ public class Constants {
 	public static final int driverController = 0;
 	public static final int operatorController = 1;
 	
-	public static final double nativePerFoot = 2172.99549;
+	public static final double nativePerFoot = 3893.020921; //2172.99549;
 	
 	public static final double feetToRotations(double feet) {
 		return (feet * nativePerFoot) / 4096.0;

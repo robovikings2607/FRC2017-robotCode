@@ -60,7 +60,7 @@ public class Transmission implements SpeedController{
 		logger.start();
 	}
 
-	public void setMotionProfileLowGearGains() {
+	public void setLowGearGains() {
 		if (name.equalsIgnoreCase("Right Transmission")) {
 			double Kp = 0.0;
 			motor1.setF((1023.00 / 2900.00) * 1.08);
@@ -76,7 +76,7 @@ public class Transmission implements SpeedController{
 		}
 	}
 	
-	public void setMotionProfileHighGearGains() {
+	public void setHighGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
 			double Kp = 0.0; 
 			motor1.setF((1023.0 / 6102.0) * 1.1);
@@ -92,7 +92,7 @@ public class Transmission implements SpeedController{
 		}		
 	}
 	
-	public void setLowGearGains() {
+	public void setMotionProfileLowGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
 			double Kp = 50.0 / 80.0; //13.1 / 80.0; //10.1
 			motor1.setF((1023.00 / 2900.00) * 1.08); // set to (1023 / nativeVelocity)
@@ -108,7 +108,7 @@ public class Transmission implements SpeedController{
 		}
 	}
 
-	public void setHighGearGains() {
+	public void setMotionProfileHighGearGains() {
 		if(name.equalsIgnoreCase("Right Transmission")) {
 			double Kp = 102.3 / 300.0; //60.0 / 200.0; 
 			motor1.setF((1023.0 / 6102.0) * 1.1);
@@ -124,17 +124,17 @@ public class Transmission implements SpeedController{
 		}
 	}
 	
-	public void setHighGear(boolean hg) {
+	public void setHighGear(boolean hg, boolean following) {
 		if (highGear != hg) {
 			highGear = hg;
 			if (highGear) {
-				if (motor1.getControlMode() == TalonControlMode.MotionProfile) {
+				if (following) {
 					setMotionProfileHighGearGains();
 				} else {
 					setHighGearGains();	
 				}
 			} else { 
-				if (motor1.getControlMode() == TalonControlMode.MotionProfile) {
+				if (following) {
 					setMotionProfileLowGearGains();
 				} else {
 					setLowGearGains();

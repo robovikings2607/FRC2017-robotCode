@@ -2,7 +2,7 @@ package org.usfirst.frc.team2607.robot.auto;
 
 import java.util.ArrayList;
 
-
+import org.usfirst.frc.team2607.robot.Constants;
 import org.usfirst.frc.team2607.robot.Robot;
 import org.usfirst.frc.team2607.robot.RobovikingDriveTrainProfileDriver;
 
@@ -89,6 +89,10 @@ public class AutonomousManager {
 	            kWheelbaseWidth, "Corn Dogs");
 	        */
 			
+			robot.shifter.set(Constants.lowGear);
+			robot.leftTrans.setHighGear(false, true);
+			robot.rightTrans.setHighGear(false, true);
+			
 			Path path = this.getPathFromFile("/home/lvuser/centerPeg.txt");
 			
 			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
@@ -97,14 +101,17 @@ public class AutonomousManager {
 				while (!driver.isDone()) { 
 					Thread.sleep(20); 
 				}
-				robot.gearHandler.set(true);
+				robot.gearHandler.set(Constants.gearOpen);
 				Thread.sleep(10);
 				robot.leftTrans.set(-100);
 				robot.rightTrans.set(100);
 				Thread.sleep(500);
 				robot.leftTrans.set(0);
 				robot.rightTrans.set(0);
-				robot.gearHandler.set(false);
+				robot.gearHandler.set(Constants.gearClosed);
+				robot.shifter.set(Constants.highGear);
+				robot.leftTrans.setHighGear(true, false);
+				robot.rightTrans.setHighGear(true, false);
 			} catch (Exception e) {}
 		}
 
@@ -135,6 +142,10 @@ public class AutonomousManager {
 
 	        p.addWaypoint(new WaypointSequence.Waypoint(7.5 , -1.75 , 5.6));
 
+			robot.shifter.set(Constants.lowGear);
+			robot.leftTrans.setHighGear(false, true);
+			robot.rightTrans.setHighGear(false, true);
+
 	        Path path = PathGenerator.makePath(p, config,
 	            kWheelbaseWidth, "Cotton Candy");
 	        
@@ -147,14 +158,17 @@ public class AutonomousManager {
 				while (!driver.isDone()) { 
 					Thread.sleep(20); 
 				}
-				robot.gearHandler.set(true);
+				robot.gearHandler.set(Constants.gearOpen);
 				Thread.sleep(10);
 				robot.leftTrans.set(-100);
 				robot.rightTrans.set(100);
 				Thread.sleep(500);
 				robot.leftTrans.set(0);
 				robot.rightTrans.set(0);
-				robot.gearHandler.set(false);
+				robot.gearHandler.set(Constants.gearOpen);
+				robot.shifter.set(Constants.highGear);
+				robot.leftTrans.setHighGear(true, false);
+				robot.rightTrans.setHighGear(true, false);
 			} catch (Exception e) {}
 		}
 
