@@ -18,6 +18,7 @@ public class Constants {
 	public static final int operatorController = 1;
 	
 	public static final double nativePerFoot = 3893.020921; //2172.99549;
+	public static final double kWheelbaseWidth = 29.872 / 12.0;
 	
 	public static final double feetToRotations(double feet) {
 		return (feet * nativePerFoot) / 4096.0;
@@ -29,7 +30,7 @@ public class Constants {
 	
 	public static boolean gearOpen = (true);
 	public static boolean gearClosed = (false);
-	public static boolean highGear = (true);
-	public static boolean lowGear = (false);
+	public static boolean highGear = (false);
+	public static boolean lowGear = (true);
 	
 }
