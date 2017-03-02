@@ -152,7 +152,7 @@ public class AutonomousManager {
 	        WaypointSequence p = new WaypointSequence(10);
 			p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
 			p.addWaypoint(new WaypointSequence.Waypoint(6.45, 0.0, 0.0));
-			p.addWaypoint(new WaypointSequence.Waypoint(8.95 , -1.9 , 5.15));
+			p.addWaypoint(new WaypointSequence.Waypoint(8.95 , -1.9 , 5.1));
 			
 			path = PathGenerator.makePath(p, config,
 		            Constants.kWheelbaseWidth, "Cotton Candy");
@@ -176,13 +176,13 @@ public class AutonomousManager {
 			System.out.println("running LeftPeg auton...");
 			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
 			driver.followPathBACKWARDS();
-			
+			/*
 			try {
 				while (!driver.isDone()) { 
 					Thread.sleep(20); 
 				}
 				robot.gearHandler.set(Constants.gearOpen);
-				Thread.sleep(30);
+				Thread.sleep(499);
 				robot.leftTrans.set(-60);
 				robot.rightTrans.set(60);
 				Thread.sleep(350);
@@ -193,6 +193,7 @@ public class AutonomousManager {
 				robot.leftTrans.setHighGear(true, false);
 				robot.rightTrans.setHighGear(true, false);
 			} catch (Exception e) {System.out.println("Interrupted...");}
+			*/
 			System.out.println("done Leftpeg");
 		}
 
@@ -217,8 +218,8 @@ public class AutonomousManager {
 			
 			WaypointSequence p = new WaypointSequence(10);
 			p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
-			p.addWaypoint(new WaypointSequence.Waypoint(4.5, 0.0, 0.0));
-			p.addWaypoint(new WaypointSequence.Waypoint(7.1 , 3.6 , 1.55));
+			p.addWaypoint(new WaypointSequence.Waypoint(4.6, 0.0, 0.0));
+			p.addWaypoint(new WaypointSequence.Waypoint(7.2 , 3.7 , 1.55));
 			//p.addWaypoint(new WaypointSequence.Waypoint(7.5, -1.75, 5.6));  // heading 5.6 turned left instead of right since we follow backwards
 			//p.addWaypoint(new WaypointSequence.Waypoint(13.7, 2.3, 1.5));
 			
@@ -236,6 +237,7 @@ public class AutonomousManager {
 			System.out.println("running RightPeg auton....");
 			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans, robot.rightTrans, path);
 			driver.followPathBACKWARDS();
+			/*
 			try {
 				while (!driver.isDone()) {
 					Thread.sleep(20);
@@ -255,6 +257,7 @@ public class AutonomousManager {
 			} catch (Exception e) {
 				System.out.println("....RightPeg path interrupted");
 			}
+			*/
 			
 			System.out.println("done RightPeg");
 		}
