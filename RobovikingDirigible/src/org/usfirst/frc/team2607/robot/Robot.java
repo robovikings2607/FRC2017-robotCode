@@ -30,7 +30,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	
-	Climber itsTheCliiiiiiiiiiiiiiiiiiiiiiimb;
+	Climber climber;
+	Shooter shooter;
+	Turret turret;
 	public GearHandler gearHandler;
 	public Transmission leftTrans , rightTrans;
 	RobovikingStick driveController , opController;
@@ -48,8 +50,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		itsTheCliiiiiiiiiiiiiiiiiiiiiiimb = new Climber(Constants.climberMotor);
-		gearHandler = new GearHandler(Constants.gearSolenoid);
+		climber = new Climber(Constants.climberMotor);
+		shooter = new Shooter();
+		turret = new Turret();
+		gearHandler = new GearHandler();
 		leftTrans = new Transmission(Constants.leftMotorA , Constants.leftMotorB , "Left Transmission");
 		rightTrans = new Transmission(Constants.rightMotorA , Constants.rightMotorB , "Right Transmission");
 		shifter = new Solenoid(Constants.pcmDeviceID , Constants.shifterSolenoid);
@@ -66,7 +70,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("rightVoltage", rightVoltage);
 		SmartDashboard.putNumber("leftVoltage", leftVoltage);
 
-		
+		/*
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
         ServerConnector connector = new ServerConnector(server);
@@ -89,6 +93,7 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		*/
 		
 	}
 
@@ -167,6 +172,9 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		leftTrans.enablePID(true, false);
 		rightTrans.enablePID(true, false);
+		shifter.set(Constants.highGear);
+		shooter.usePID(true);
+		turret.useMagic(false);
 	}
 	
 	/**
@@ -175,40 +183,61 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
-		//TELEOP STUFF------------
+		//DRIVING
 		robotDrive.arcadeDrive(driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxLeftStickY) , 
 				driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
+		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
+		leftTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
+		rightTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
 		
-		if(Math.abs(opController.getRawAxis(RobovikingStick.xBoxLeftStickY)) > 0.1 ) {
-			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.run(opController.getRawAxis(RobovikingStick.xBoxLeftStickY));
-		} else{
-			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
+		//CLIMBER
+		if(opController.getRawButton(RobovikingStick.xBoxButtonB)) {
+			climber.stop();
 		}
-			
-		/*if(opController.getPOV(0) == 0 )   {
-			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runForward();
-		} else if(opController.getPOV(0) == 180) {
-			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.runBackwards();
-		} else {
-			itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.stop();
-		}*/
+		else {
+			if(Math.abs(opController.getRawAxis(RobovikingStick.xBoxLeftStickY)) > 0.1 ) {
+				climber.run(opController.getRawAxis(RobovikingStick.xBoxLeftStickY));
+			} else{
+				climber.stop();
+			}
+		}
 		
-		//itsTheCliiiiiiiiiiiiiiiiiiiiiiimb.lockInPlace(opController.getToggleButton(RobovikingStick.xBoxButtonY));
-		
+		//BALL PICKUP
 		if(opController.getRawButton(RobovikingStick.xBoxRightBumper)) {
-			pickup.set(0.5);
+			pickup.set(1.0);
 		} else if(opController.getRawButton(RobovikingStick.xBoxLeftBumper)) {
-			pickup.set(-0.5);
+			pickup.set(-1.0);
 		} else {
 			pickup.set(0.0);
 		}
 		
-
-		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
-		leftTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
-		rightTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
-		gearHandler.set(opController.getRawButton(RobovikingStick.xBoxButtonA));
+		//GEARS
+		gearHandler.openDoors(driveController.getRawButton(RobovikingStick.xBoxButtonA));
+		gearHandler.openRamp(driveController.getRawButton(RobovikingStick.xBoxButtonB));
 		
+		//SHOOTER
+		switch(opController.getPOV(0)) {
+		case 0:
+			shooter.set(3800.0);
+			break;
+		case 90:
+			shooter.set(3600.0);
+			break;
+		case 180:
+			shooter.set(3400.0);
+			break;
+		case 270:
+			shooter.set(4000.0);
+			break;
+		default:
+			shooter.set(0.0);
+			break;
+		}
+		
+		shooter.load(opController.getTriggerPressed(RobovikingStick.xBoxRightTrigger));
+		
+		//TURRET
+		turret.set(opController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
 	}
 
 	/**

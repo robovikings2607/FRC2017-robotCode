@@ -27,6 +27,7 @@ public class AutonomousManager {
 		
 		modes.add(new DoNothingFailsafe());
 		modes.add(new DoNothing());
+		modes.add(new CrossBaseline(robot));
 		modes.add(new CenterPeg(robot));
 		modes.add(new LeftPeg(robot));
 		modes.add(new RightPeg(robot));
@@ -66,6 +67,43 @@ public class AutonomousManager {
 	 * You must add the mode to the array once you define its class
 	 */
 	
+	public class CrossBaseline extends AutonomousMode {
+
+		Path path;
+		CrossBaseline(Robot r) {
+			super(r);
+			TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
+			config.dt = .05;
+			config.max_acc = 4.5; //prev 5.0
+			config.max_jerk = 25.0;
+			config.max_vel = 7.0;
+			
+			WaypointSequence p = new WaypointSequence(10);
+			p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
+			p.addWaypoint(new WaypointSequence.Waypoint(14.0, 0.0, 0.0));
+			
+			path = PathGenerator.makePath(p, config, Constants.kWheelbaseWidth, "CrossBaseline");
+		}
+		@Override
+		public void run() {
+			robot.shifter.set(Constants.lowGear);
+			robot.leftTrans.setHighGear(false, true);
+			robot.rightTrans.setHighGear(false, true);
+			
+			try{ Thread.sleep(250);} catch(Exception e){System.out.println("Error waiting for shifters to shift...");}
+			
+			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
+			driver.followPathBACKWARDS();
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "CrossBaseline";
+		}
+		
+	}
+	
 	public class CenterPeg extends AutonomousMode {
 		
 		Path path;
@@ -73,15 +111,15 @@ public class AutonomousManager {
 			super(r);
 			TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
 			config.dt = .05;
-			config.max_acc = 5.0;
+			config.max_acc = 4.5; //prev 5.0
 			config.max_jerk = 25.0;
 			config.max_vel = 7.0;
 			
 			WaypointSequence p = new WaypointSequence(10);
 			p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
-			p.addWaypoint(new WaypointSequence.Waypoint(7.0,0.0,0.0));
+			p.addWaypoint(new WaypointSequence.Waypoint(7.3, 0.0, 0.0));
 			
-			path = PathGenerator.makePath(p, config, Constants.kWheelbaseWidth, "LeftPeg");
+			path = PathGenerator.makePath(p, config, Constants.kWheelbaseWidth, "CenterPeg");
 		}
 
 		@Override
@@ -109,6 +147,8 @@ public class AutonomousManager {
 			robot.leftTrans.setHighGear(false, true);
 			robot.rightTrans.setHighGear(false, true);
 			
+			try{ Thread.sleep(250);} catch(Exception e){System.out.println("Error waiting for shifters to shift...");}
+			
 			//Path path = this.getPathFromFile("/home/lvuser/centerPeg.txt");
 			
 			RobovikingDriveTrainProfileDriver driver = new RobovikingDriveTrainProfileDriver(robot.leftTrans , robot.rightTrans , path);
@@ -117,14 +157,14 @@ public class AutonomousManager {
 				while (!driver.isDone()) { 
 					Thread.sleep(20); 
 				}
-				robot.gearHandler.set(Constants.gearOpen);
+				robot.gearHandler.openDoors(Constants.gearOpen);
 				Thread.sleep(500);
 				robot.leftTrans.set(-100);
 				robot.rightTrans.set(100);
 				Thread.sleep(300);
 				robot.leftTrans.set(0);
 				robot.rightTrans.set(0);
-				robot.gearHandler.set(Constants.gearClosed);
+				robot.gearHandler.openDoors(Constants.gearClosed);
 				robot.shifter.set(Constants.highGear);
 				robot.leftTrans.setHighGear(true, false);
 				robot.rightTrans.setHighGear(true, false);
@@ -151,9 +191,10 @@ public class AutonomousManager {
 	        
 	        WaypointSequence p = new WaypointSequence(10);
 			p.addWaypoint(new WaypointSequence.Waypoint(0.0, 0.0, 0.0));
-			p.addWaypoint(new WaypointSequence.Waypoint(6.45, 0.0, 0.0));
-			p.addWaypoint(new WaypointSequence.Waypoint(8.95 , -1.9 , 5.1));
-			
+			//p.addWaypoint(new WaypointSequence.Waypoint(6.45, 0.0, 0.0));
+			//p.addWaypoint(new WaypointSequence.Waypoint(8.95 , -1.9 , 5.1));
+			p.addWaypoint(new WaypointSequence.Waypoint(7.15, 0.0, 0.0));
+			p.addWaypoint(new WaypointSequence.Waypoint(9.8 , -2.4 , 5.1));
 			path = PathGenerator.makePath(p, config,
 		            Constants.kWheelbaseWidth, "Cotton Candy");
 		}
@@ -169,7 +210,7 @@ public class AutonomousManager {
 			robot.shifter.set(Constants.lowGear);
 			robot.leftTrans.setHighGear(false, true);
 			robot.rightTrans.setHighGear(false, true);
-			robot.gearHandler.set(Constants.gearClosed);
+			robot.gearHandler.openDoors(Constants.gearClosed);
 	        
 	        //Path path = this.getPathFromFile("/home/lvuser/rightPeg.txt");
 			
@@ -199,7 +240,7 @@ public class AutonomousManager {
 
 		@Override
 		public String getName() {
-			return "LeftPeg";
+			return "RedLeftPeg";
 		}
 	}
 	

@@ -5,18 +5,23 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class GearHandler {
 	
 	//TODO add a Solenoid (pneumatic control switch) object
-	Solenoid door;
+	Solenoid door , ramp;
 	
-	public GearHandler (int port){
+	public GearHandler (){
 		//TODO set the Solenoid to a "port number" parameter
-		door= new Solenoid (Constants.pcmDeviceID , port);
+		door = new Solenoid(Constants.pcmDeviceID , Constants.gearDoorSolenoid);
+		ramp = new Solenoid(Constants.pcmDeviceID , Constants.gearRampSolenoid);
 		
 	}
-	public void set(boolean t) {
+	public void openDoors(boolean t) {
 		door.set(t);
 	}
 	public boolean get (){
 		return door.get();
+	}
+	
+	public void openRamp( boolean wamp ) {
+		ramp.set(wamp);
 	}
 }
 
