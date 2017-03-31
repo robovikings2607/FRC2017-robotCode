@@ -17,6 +17,11 @@ public class Turret {
 		turret.reverseSensor(false);
 		turret.configNominalOutputVoltage(0.0, 0.0);
 		turret.configPeakOutputVoltage(6.0, -6.0);
+		//TODO Investigate why soft limits didn't stop the turret from rotating
+		turret.setForwardSoftLimit(100.0); //90 degrees //5857.0 
+		turret.setReverseSoftLimit(-100.0); //-5197.0
+		turret.enableForwardSoftLimit(true);
+		turret.enableReverseSoftLimit(true);
 		turret.setProfile(0);
 		
 		turret.setF(0.0);
@@ -35,6 +40,10 @@ public class Turret {
 	
 	public void set(double in) {
 		turret.set(in);
+	}
+	
+	public void resetEnc() {
+		turret.setPosition(0.0);
 	}
 	
 	public String getInfo() {

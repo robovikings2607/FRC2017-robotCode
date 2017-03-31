@@ -16,6 +16,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.usfirst.frc.team2607.robot.auto.AutonomousEngine;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
@@ -30,9 +31,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	
-	Climber climber;
-	Shooter shooter;
-	Turret turret;
+	public Climber climber;
+	//PowerDistributionPanel pdp;
+	//Shooter shooter;
+	//Turret turret;
 	public GearHandler gearHandler;
 	public Transmission leftTrans , rightTrans;
 	RobovikingStick driveController , opController;
@@ -42,6 +44,8 @@ public class Robot extends IterativeRobot {
 	Talon pickup;
 	Thread Autothread = null;
 	
+	//PDPLogger pdpLogger = null;
+	
 	double targetSpeed = 0.0, rightVoltage = 0.0, leftVoltage = 0.0;
 
 	/**
@@ -50,9 +54,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		//pdp = new PowerDistributionPanel();
 		climber = new Climber(Constants.climberMotor);
-		shooter = new Shooter();
-		turret = new Turret();
+		//shooter = new Shooter();
+		//turret = new Turret();
 		gearHandler = new GearHandler();
 		leftTrans = new Transmission(Constants.leftMotorA , Constants.leftMotorB , "Left Transmission");
 		rightTrans = new Transmission(Constants.rightMotorA , Constants.rightMotorB , "Right Transmission");
@@ -66,11 +71,14 @@ public class Robot extends IterativeRobot {
 		autoEngine=new AutonomousEngine(this);
 		autoEngine.loadSavedMode();
 		
+		//pdpLogger = new PDPLogger(pdp);
+		//pdpLogger.start();
+		
 		SmartDashboard.putNumber("targetSpeed", targetSpeed);
 		SmartDashboard.putNumber("rightVoltage", rightVoltage);
 		SmartDashboard.putNumber("leftVoltage", leftVoltage);
 
-		/*
+		
 		// for tuning....webserver to view PID logs
     	Server server = new Server(5801);
         ServerConnector connector = new ServerConnector(server);
@@ -93,7 +101,7 @@ public class Robot extends IterativeRobot {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		*/
+		
 		
 	}
 
@@ -144,7 +152,12 @@ public class Robot extends IterativeRobot {
 */	
 	}
 
-
+	@Override
+	public void disabledInit() {
+		leftTrans.setBrakeMode(false);
+		rightTrans.setBrakeMode(false);
+		//pdpLogger.disable();
+	}
 	
 	/**
 	 * This function is called periodically during autonomous
@@ -173,8 +186,13 @@ public class Robot extends IterativeRobot {
 		leftTrans.enablePID(true, false);
 		rightTrans.enablePID(true, false);
 		shifter.set(Constants.highGear);
-		shooter.usePID(true);
-		turret.useMagic(false);
+		leftTrans.setHighGear(true, false);
+		rightTrans.setHighGear(true, false);
+		//shooter.usePID(true);
+		//turret.useMagic(false);
+		leftTrans.setBrakeMode(true);
+		rightTrans.setBrakeMode(true);
+		//pdpLogger.enable();
 	}
 	
 	/**
@@ -186,7 +204,7 @@ public class Robot extends IterativeRobot {
 		//DRIVING
 		robotDrive.arcadeDrive(driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxLeftStickY) , 
 				driveController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
-		shifter.set(driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
+		shifter.set(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick));
 		leftTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
 		rightTrans.setHighGear(!driveController.getToggleButton(RobovikingStick.xBoxButtonLeftStick), false);
 		
@@ -213,9 +231,12 @@ public class Robot extends IterativeRobot {
 		
 		//GEARS
 		gearHandler.openDoors(driveController.getRawButton(RobovikingStick.xBoxButtonA));
-		gearHandler.openRamp(driveController.getRawButton(RobovikingStick.xBoxButtonB));
+		gearHandler.openRamp(!driveController.getRawButton(RobovikingStick.xBoxButtonB));
+	}
+}
 		
 		//SHOOTER
+		/*
 		switch(opController.getPOV(0)) {
 		case 0:
 			shooter.set(3800.0);
@@ -232,16 +253,25 @@ public class Robot extends IterativeRobot {
 		default:
 			shooter.set(0.0);
 			break;
-		}
+		} 
+		*/
+		
+		/*if(opController.getRawButton(RobovikingStick.xBoxButtonA)) shooter.set(3800.0);
+		else if(opController.getRawButton(RobovikingStick.xBoxButtonY)) shooter.set(4100.0);
+		else if(opController.getRawButton(RobovikingStick.xBoxButtonX)) shooter.set(4000.0);
+		else shooter.set(0.0);
 		
 		shooter.load(opController.getTriggerPressed(RobovikingStick.xBoxRightTrigger));
 		
 		//TURRET
 		turret.set(opController.getRawAxisWithDeadzone(RobovikingStick.xBoxRightStickX));
-	}
+		if(opController.getRawButton(RobovikingStick.xBoxButtonStart)) turret.resetEnc();
+		//System.out.println(turret.getInfo());
+		//System.out.println(shooter.getInfo());
+		System.out.println(leftTrans.getRate() + " , " + rightTrans.getRate());
+	}*/
 
 	/**
 	 * This function is called periodically during test mode
 	 */
-}
 

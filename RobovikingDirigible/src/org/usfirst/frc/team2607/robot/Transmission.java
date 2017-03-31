@@ -182,6 +182,10 @@ public class Transmission implements SpeedController{
 		return motor1.getEncVelocity();
 	}
 	
+	public void setBrakeMode(boolean brotherbear) {
+		motor1.enableBrakeMode(brotherbear);
+		motor2.enableBrakeMode(brotherbear);
+	}
 	double prevAbsSpeed = 0.0;
 	@Override
 	public void set(double speed) {

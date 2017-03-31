@@ -7,6 +7,10 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.Talon;
 
 public class Shooter {
+	/*NOTES:
+	 * -120 in from boiler wall to turret center : accurate @ 4000rpm to 4100rpm
+	 * -85.5 + 26 in from boiler wall to turret center: accurate @ ~3800rpm
+	 */
 	
 	CANTalon shooter , shooterFollower;
 	Talon loader;
