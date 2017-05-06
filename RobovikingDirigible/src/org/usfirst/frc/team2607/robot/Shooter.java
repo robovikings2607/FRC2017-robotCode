@@ -4,6 +4,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Talon;
 
 public class Shooter {
@@ -14,16 +15,15 @@ public class Shooter {
 	
 	CANTalon shooter , shooterFollower;
 	Talon loader;
+	Relay light;
 	PIDLogger logger;
 	double targetSpeed = 0.0;
-	
-	final double kF = 1023.0 / 28340.0;
-	final double kP = 102.3 / 2040.0;
 	
 	public Shooter() {
 		shooter = new CANTalon(Constants.shooterMotorA);
 		shooterFollower = new CANTalon(Constants.shooterMotorB);
 		loader = new Talon(Constants.loaderMotor);
+		light = new Relay(Constants.lightRelay);
 		
 		shooterFollower.changeControlMode(TalonControlMode.Follower);
 		shooterFollower.set(Constants.shooterMotorA);
@@ -31,13 +31,13 @@ public class Shooter {
 		shooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		shooter.reverseSensor(false);
 		shooter.configNominalOutputVoltage(0.0, 0.0);
-		shooter.configPeakOutputVoltage(12.0 , 0.0);
+		shooter.configPeakOutputVoltage(12.0 , -12.0);
 		shooter.setProfile(0);
 		
-		shooter.setF(this.kF);
-		shooter.setP(this.kP * 1.75);
+		shooter.setF(1023.0 / 28300.0);
+		shooter.setP(0.0);
 		shooter.setI(0.0);
-		shooter.setD(this.kP * 30.0);
+		shooter.setD(0.0);
 		
 		logger = new PIDLogger(shooter , "shooterWheel");
 		logger.start();
@@ -49,8 +49,13 @@ public class Shooter {
 		logger.enableLogging(use);
 	}
 	
+	public void useTargetLight(boolean iCantBelieveItsNotButter) {
+		if(iCantBelieveItsNotButter) light.set(Relay.Value.kForward);
+		else light.set(Relay.Value.kOff);
+	}
+	
 	public void load(boolean switch_) {
-		if(switch_) loader.set(0.75);
+		if(switch_) loader.set(0.42);
 		else loader.set(0.0);
 	}
 	

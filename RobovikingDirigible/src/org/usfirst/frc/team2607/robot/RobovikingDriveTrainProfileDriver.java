@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2607.robot;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.Trajectory;
@@ -20,6 +21,7 @@ public class RobovikingDriveTrainProfileDriver {
 	private boolean running = false, done = false;
 	private long step;
 	private boolean runBACKWARDS = false;
+	private AtomicBoolean interrupt = new AtomicBoolean(false);
 	
 	private class PeriodicRunnable implements java.lang.Runnable {
 		private long startTime;
@@ -43,8 +45,9 @@ public class RobovikingDriveTrainProfileDriver {
 	    		rightMotors.enablePID(true,true);
 	    	}
 	    	step = (System.currentTimeMillis() - startTime) / (long)(dtSeconds * 1000);
-	    	System.out.print("step: " + step);
+	    	//System.out.print("step: " + step);
 	    	try {
+	    		if (interrupt.get() == true) throw new Exception("Interrupting profile");
 	    		if (runBACKWARDS){
 	    			leftMotors.set(Constants.feetPerSecondToRPM(rightVelPts.get((int)step).vel)); 
 	    			rightMotors.set(Constants.feetPerSecondToRPM(-leftVelPts.get((int)step).vel));
@@ -81,6 +84,10 @@ public class RobovikingDriveTrainProfileDriver {
 			rightVelPts.add(rt.getSegment(i));
 			if (i==0) dtSeconds = lt.getSegment(i).dt;
 		}
+	}
+	
+	public void interruptProfile() {
+		interrupt.set(true);
 	}
 
 	public boolean isRunning() {

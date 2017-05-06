@@ -187,6 +187,8 @@ public class Transmission implements SpeedController{
 		motor2.enableBrakeMode(brotherbear);
 	}
 	double prevAbsSpeed = 0.0;
+	int tickCount = 0;
+	
 	@Override
 	public void set(double speed) {
 		// TODO Auto-generated method stub
@@ -196,6 +198,10 @@ public class Transmission implements SpeedController{
 			else speed = speed * 410.0;			
 		}
 		motor1.set(speed);
+		if (++tickCount >= 50) {
+			System.out.println(name + ": " + speed + ((speedIsRPM) ? "RPM" : "%"));
+			tickCount = 0;
+		}
 		logger.updSetpoint(speed);
 	}
 	

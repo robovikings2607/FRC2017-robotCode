@@ -7,14 +7,16 @@ public class Constants {
 	public static final int rightMotorA = 1;
 	public static final int rightMotorB = 3;
 	
-	public static final int shooterMotorA = 7;
-	public static final int shooterMotorB = 16;
-	public static final int turretMotor = 15;
+	public static final int shooterMotorA = 8;
+	public static final int shooterMotorB = 5;
 	public static final int loaderMotor = 2;
 	
-	public static final int pickupMotor = 0;
+	public static final int gearPickupMotor = 0;
 	public static final int climberMotor = 1;
 	
+	public static final int lightRelay = 0;
+	
+	public static final int gearPickUpSolenoid = 4;
 	public static final int gearRampSolenoid = 3;
 	public static final int brakeSolenoid = 2;
 	public static final int gearDoorSolenoid = 1;
