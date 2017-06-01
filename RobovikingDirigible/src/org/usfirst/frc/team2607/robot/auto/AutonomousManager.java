@@ -29,11 +29,13 @@ public class AutonomousManager {
 		modes.add(new DoNothing());
 		modes.add(new CrossBaseline(robot));
 		modes.add(new CenterPeg(robot));
+		modes.add(new TestVisioTurn(robot));
 		//modes.add(new LeftPeg(robot));
 		//modes.add(new RightPeg(robot));
 		//modes.add(new TestTurn(robot));
 		modes.add(new RightShotCenterPeg(robot));
 		modes.add(new LeftShotCenterPeg(robot));
+		modes.add(new TestShooter(robot));
 	}
 	
 	public AutonomousMode getModeByName (String name){
@@ -279,6 +281,28 @@ public class AutonomousManager {
 		
 	}
 	
+	public class TestVisioTurn extends AutonomousMode {
+
+		TestVisioTurn(Robot r){
+			super(r);
+		}
+		@Override
+		public void run() {
+			robot.setupAutonConfig();
+			
+			robot.rotateDeg(SmartDashboard.getNumber("degToRotate", 0.0));
+			
+		}
+
+		@Override
+		public String getName() {
+			return "fbeyjyt";
+		}
+		
+		
+		
+	}
+	
 	public class RightShotCenterPeg extends AutonomousMode {
 		//AKA RED ALLIANCE
 		Path path_0, path_1;
@@ -410,7 +434,41 @@ public class AutonomousManager {
 		public String getName() {
 			return "LeftShotCenterPeg";
 		}
+		
 	}
+		
+		public class TestShooter extends AutonomousMode{
+			
+			boolean firstRun;
+			
+			TestShooter(Robot r){
+				super(r);
+				firstRun = true;
+			}
+			
+			public void run(){
+				
+				if (firstRun = true){
+					robot.shooter.usePID(true);
+					firstRun = false;
+				}
+				while (true){
+					robot.shooter.set(SmartDashboard.getNumber("ShooterSpeed", 0.00));
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						robot.shooter.set(0.00);
+						return;
+					}
+				}
+			}
+			
+			public String getName(){
+				return "TestShooter";
+			}
+		}
+	
 	
 	//*************************************************************************//*************************************************************************8
 	//*************************************************************************//*************************************************************************8

@@ -31,13 +31,16 @@ public class Shooter {
 		shooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		shooter.reverseSensor(false);
 		shooter.configNominalOutputVoltage(0.0, 0.0);
-		shooter.configPeakOutputVoltage(12.0 , -12.0);
+		shooter.configPeakOutputVoltage(12.0 , 0.0);
 		shooter.setProfile(0);
 		
-		shooter.setF(1023.0 / 28300.0);
-		shooter.setP(0.0);
+		shooter.setF(.0355);
+		shooter.setP(.0425);
 		shooter.setI(0.0);
 		shooter.setD(0.0);
+		
+		shooter.enableBrakeMode(false);
+		shooterFollower.enableBrakeMode(false);
 		
 		logger = new PIDLogger(shooter , "shooterWheel");
 		logger.start();

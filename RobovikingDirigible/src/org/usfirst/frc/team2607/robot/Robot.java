@@ -81,6 +81,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("targetSpeed", targetSpeed);
 		SmartDashboard.putNumber("rightVoltage", rightVoltage);
 		SmartDashboard.putNumber("leftVoltage", leftVoltage);
+		SmartDashboard.putNumber("ShooterSpeed", 0.0);
 
 		
 		// for tuning....webserver to view PID logs
