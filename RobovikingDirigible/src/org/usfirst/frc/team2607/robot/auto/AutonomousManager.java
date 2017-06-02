@@ -36,6 +36,7 @@ public class AutonomousManager {
 		modes.add(new RightShotCenterPeg(robot));
 		modes.add(new LeftShotCenterPeg(robot));
 		modes.add(new TestShooter(robot));
+		modes.add(new ShooterStepTest(robot));
 	}
 	
 	public AutonomousMode getModeByName (String name){
@@ -469,7 +470,39 @@ public class AutonomousManager {
 			}
 		}
 	
-	
+	public class ShooterStepTest extends AutonomousMode {
+		boolean firstRun;
+		
+		ShooterStepTest(Robot r) {
+			super(r);
+			firstRun = true;
+		}
+		
+		public void run() {
+			if (firstRun) {
+				robot.shooter.useVoltage(true);
+				firstRun = false;
+			}
+			try {
+				Thread.sleep(1000);
+				robot.shooter.set(4.0);
+				Thread.sleep(3000);
+				robot.shooter.set(8.0);
+				Thread.sleep(3000);
+				robot.shooter.set(12.0);
+				Thread.sleep(3000);
+				robot.shooter.set(0.0);
+				robot.shooter.useVoltage(false);
+			} catch (Exception e) {
+				robot.shooter.set(0.00);
+				return;
+			}			
+		}
+		
+		public String getName() {
+			return "ShooterStepTest";
+		}
+	}
 	//*************************************************************************//*************************************************************************8
 	//*************************************************************************//*************************************************************************8
 	//*************************************************************************//*************************************************************************8

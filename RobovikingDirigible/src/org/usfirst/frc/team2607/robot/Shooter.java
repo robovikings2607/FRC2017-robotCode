@@ -52,6 +52,12 @@ public class Shooter {
 		logger.enableLogging(use);
 	}
 	
+	public void useVoltage(boolean use) {
+		if (use) shooter.changeControlMode(TalonControlMode.Voltage);
+		else shooter.changeControlMode(TalonControlMode.PercentVbus);
+		logger.enableLogging(use);
+	}
+	
 	public void useTargetLight(boolean iCantBelieveItsNotButter) {
 		if(iCantBelieveItsNotButter) light.set(Relay.Value.kForward);
 		else light.set(Relay.Value.kOff);
