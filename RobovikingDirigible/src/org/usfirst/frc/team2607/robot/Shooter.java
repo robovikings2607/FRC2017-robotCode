@@ -1,8 +1,7 @@
 package org.usfirst.frc.team2607.robot;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.TalonControlMode;
+
+import com.ctre.phoenix.MotorControl.CAN.TalonSRX;
 
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Talon;
@@ -13,22 +12,22 @@ public class Shooter {
 	 * -85.5 + 26 in from boiler wall to turret center: accurate @ ~3800rpm
 	 */
 	
-	CANTalon shooter , shooterFollower;
+	TalonSRX shooter , shooterFollower;
 	Talon loader;
 	Relay light;
 	PIDLogger logger;
 	double targetSpeed = 0.0;
 	
 	public Shooter() {
-		shooter = new CANTalon(Constants.shooterMotorA);
-		shooterFollower = new CANTalon(Constants.shooterMotorB);
+		shooter = new TalonSRX(Constants.shooterMotorA);
+		shooterFollower = new TalonSRX(Constants.shooterMotorB);
 		loader = new Talon(Constants.loaderMotor);
 		light = new Relay(Constants.lightRelay);
 		
-		shooterFollower.changeControlMode(TalonControlMode.Follower);
+		shooterFollower.changeControlMode(TalonSRX.TalonControlMode.Follower);
 		shooterFollower.set(Constants.shooterMotorA);
 		
-		shooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		shooter.setFeedbackDevice(TalonSRX.FeedbackDevice.CtreMagEncoder_Relative);
 		shooter.reverseSensor(false);
 		shooter.configNominalOutputVoltage(0.0, 0.0);
 		shooter.configPeakOutputVoltage(12.0 , 0.0);
@@ -47,14 +46,14 @@ public class Shooter {
 	}
 	
 	public void usePID(boolean use) {
-		if(use) shooter.changeControlMode(TalonControlMode.Speed);
-		else shooter.changeControlMode(TalonControlMode.PercentVbus);
+		if(use) shooter.changeControlMode(TalonSRX.TalonControlMode.Speed);
+		else shooter.changeControlMode(TalonSRX.TalonControlMode.PercentVbus);
 		logger.enableLogging(use);
 	}
 	
 	public void useVoltage(boolean use) {
-		if (use) shooter.changeControlMode(TalonControlMode.Voltage);
-		else shooter.changeControlMode(TalonControlMode.PercentVbus);
+		if (use) shooter.changeControlMode(TalonSRX.TalonControlMode.Voltage);
+		else shooter.changeControlMode(TalonSRX.TalonControlMode.PercentVbus);
 		logger.enableLogging(use);
 	}
 	

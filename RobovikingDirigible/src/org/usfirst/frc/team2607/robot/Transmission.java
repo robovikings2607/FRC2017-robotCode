@@ -1,29 +1,29 @@
 package org.usfirst.frc.team2607.robot;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.TalonControlMode;
+import com.ctre.phoenix.MotorControl.SmartMotorController.TalonControlMode;
+import com.ctre.phoenix.MotorControl.CAN.TalonSRX;
+import com.ctre.phoenix.*;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SpeedController;
 
 public class Transmission implements SpeedController{
 	
-	CANTalon motor1 , motor2;
+	TalonSRX motor1 , motor2;
 	PIDLogger logger;
 	private String name;
 	boolean highGear = true, speedIsRPM = false; 
 
 	public Transmission(int channelA , int channelB , String name){
-		motor1 = new CANTalon(channelA);
-		motor2 = new CANTalon(channelB);
+		motor1 = new TalonSRX(channelA);
+		motor2 = new TalonSRX(channelB);
 		this.name = name;
 		
-		motor2.changeControlMode(CANTalon.TalonControlMode.Follower);
+		motor2.changeControlMode(TalonSRX.TalonControlMode.Follower);
 		motor2.set(motor1.getDeviceID());
 		motor2.enableBrakeMode(false);
 		
-		motor1.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		motor1.setFeedbackDevice(TalonSRX.FeedbackDevice.QuadEncoder);
 		motor1.configEncoderCodesPerRev(1024);
 		motor1.reverseSensor(false);
 		motor1.configNominalOutputVoltage(0.0, 0.0);
@@ -234,7 +234,7 @@ public class Transmission implements SpeedController{
 		return name;
 	}
 
-	public CANTalon getMasterSRX() {
+	public TalonSRX getMasterSRX() {
 		return motor1;
 	}
 }

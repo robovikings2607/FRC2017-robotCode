@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.cscore.UsbCamera;
@@ -40,7 +41,7 @@ public class Robot extends IterativeRobot {
 	public GearHandler gearHandler;
 	public Transmission leftTrans , rightTrans;
 	RobovikingStick driveController , opController;
-	RobotDrive robotDrive;
+	DifferentialDrive robotDrive;
 	AutonomousEngine autoEngine;
 	public Solenoid shifter;
 	Talon pickup;
@@ -65,7 +66,7 @@ public class Robot extends IterativeRobot {
 		leftTrans = new Transmission(Constants.leftMotorA , Constants.leftMotorB , "Left Transmission");
 		rightTrans = new Transmission(Constants.rightMotorA , Constants.rightMotorB , "Right Transmission");
 		shifter = new Solenoid(Constants.pcmDeviceID , Constants.shifterSolenoid);
-		robotDrive = new RobotDrive(leftTrans , rightTrans);
+		robotDrive = new DifferentialDrive(leftTrans , rightTrans);
 		robotDrive.setSafetyEnabled(false);
 		
 		gyro = new AHRS(Port.kMXP);

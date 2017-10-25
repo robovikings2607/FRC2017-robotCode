@@ -8,7 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.MotorControl.CAN.TalonSRX;
+
 
 public class PIDLogger extends Thread {
 	private PrintWriter logFile = null, logFile2 = null;
@@ -18,7 +19,7 @@ public class PIDLogger extends Thread {
 	private long curTime, startTime;
 	File src;
 	
-	CANTalon srx;
+	TalonSRX srx;
 	
 	@Override
 	public void run(){
@@ -30,7 +31,7 @@ public class PIDLogger extends Thread {
 		
 	}
 	
-	public PIDLogger(CANTalon talonSRX , String dn){
+	public PIDLogger(TalonSRX talonSRX , String dn){
 		srx = talonSRX;
 		deviceName = dn;
 	}
